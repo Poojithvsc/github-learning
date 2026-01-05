@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Part 6: Git Collaboration & Remote Repositories</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            color: #333;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #e44d26;
+            border-bottom: 3px solid #e44d26;
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+        }
+        h2 {
+            color: #2c3e50;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            border-left: 4px solid #e44d26;
+            padding-left: 15px;
+        }
+        h3 {
+            color: #34495e;
+            margin-top: 25px;
+            margin-bottom: 15px;
+        }
+        p {
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+        .highlight-box {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        .info-box {
+            background: #d1ecf1;
+            border-left: 4px solid #17a2b8;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        .danger-box {
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        .success-box {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        code {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: 'Consolas', 'Monaco', monospace;
+        }
+        pre {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 20px 0;
+            font-family: 'Consolas', 'Monaco', monospace;
+        }
+        .diagram {
+            background: #f8f9fa;
+            border: 2px dashed #dee2e6;
+            padding: 30px;
+            margin: 25px 0;
+            border-radius: 8px;
+            font-family: 'Consolas', monospace;
+            overflow-x: auto;
+        }
+        ul, ol {
+            margin: 15px 0 15px 30px;
+        }
+        li {
+            margin-bottom: 10px;
+        }
+        .nav-links {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 2px solid #eee;
+        }
+        .nav-links a {
+            background: #e44d26;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+        .nav-links a:hover {
+            background: #c0392b;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background: #3498db;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+        .part-indicator {
+            background: #e44d26;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+        .workflow-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 25px 0;
+        }
+        .workflow-box h4 {
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        .workflow-box code {
+            background: rgba(255,255,255,0.2);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <span class="part-indicator">Part 6 of 7</span>
+        <h1>Git Collaboration & Remote Repositories</h1>
+
+        <p>Git's distributed nature makes collaboration possible. This section covers working with remote repositories, synchronizing code, and common team workflows.</p>
+
+        <h2>Understanding Remotes</h2>
+        <p>A <strong>remote</strong> is a version of your repository hosted somewhere else (like GitHub, GitLab, or a company server). It allows multiple people to share and synchronize their work.</p>
+
+        <div class="diagram">
+<pre>
+Your Computer                    Remote Server (GitHub)
+┌─────────────────┐             ┌─────────────────┐
+│  Local Repo     │ ← git pull  │  Remote Repo    │
+│  (your .git)    │             │  (origin)       │
+│                 │ → git push  │                 │
+└─────────────────┘             └─────────────────┘
+        ↑                               ↑
+        │                               │
+  You work here              Team members push/pull
+</pre>
+        </div>
+
+        <h3>Common Remote Names</h3>
+        <table>
+            <tr>
+                <th>Name</th>
+                <th>Convention</th>
+            </tr>
+            <tr>
+                <td><code>origin</code></td>
+                <td>Default name for the main remote (usually your repository)</td>
+            </tr>
+            <tr>
+                <td><code>upstream</code></td>
+                <td>The original repository when you fork (for open source contributions)</td>
+            </tr>
+        </table>
+
+        <h2>git remote - Managing Remotes</h2>
+
+        <pre>
+# List remotes
+git remote
+
+# List remotes with URLs
+git remote -v
+
+# Add a new remote
+git remote add origin https://github.com/username/repo.git
+git remote add upstream https://github.com/original/repo.git
+
+# Change remote URL
+git remote set-url origin https://github.com/username/new-repo.git
+
+# Remove a remote
+git remote remove origin
+
+# Rename a remote
+git remote rename origin old-origin
+
+# Show detailed info about a remote
+git remote show origin</pre>
+
+        <h3>Sample Remote Output</h3>
+        <pre>
+$ git remote -v
+origin    https://github.com/you/project.git (fetch)
+origin    https://github.com/you/project.git (push)
+upstream  https://github.com/original/project.git (fetch)
+upstream  https://github.com/original/project.git (push)</pre>
+
+        <h2>git fetch - Downloading Without Merging</h2>
+        <p><code>git fetch</code> downloads commits, branches, and tags from a remote <strong>without</strong> changing your working directory. It's safe and lets you review changes before integrating.</p>
+
+        <pre>
+# Fetch from default remote (origin)
+git fetch
+
+# Fetch from specific remote
+git fetch upstream
+
+# Fetch a specific branch
+git fetch origin main
+
+# Fetch all remotes
+git fetch --all
+
+# Fetch and prune deleted remote branches
+git fetch --prune</pre>
+
+        <div class="info-box">
+            <strong>What happens during fetch:</strong>
+            <ul>
+                <li>Downloads new commits from remote</li>
+                <li>Updates remote-tracking branches (e.g., <code>origin/main</code>)</li>
+                <li>Does NOT change your local branches</li>
+                <li>Does NOT change your working directory</li>
+            </ul>
+        </div>
+
+        <h3>Remote-Tracking Branches</h3>
+        <p>After fetching, Git stores the remote's branch state in <code>origin/branchname</code>:</p>
+
+        <pre>
+# After fetching, view remote branches
+git branch -r
+
+# Compare your main with remote main
+git diff main origin/main
+
+# See how far ahead/behind you are
+git status
+# "Your branch is 3 commits ahead of 'origin/main'"</pre>
+
+        <h2>git pull - Fetch and Integrate</h2>
+        <p><code>git pull</code> is essentially <code>git fetch</code> followed by <code>git merge</code> (or rebase).</p>
+
+        <pre>
+# Pull from tracked remote branch
+git pull
+
+# Pull with rebase instead of merge
+git pull --rebase
+
+# Pull from specific remote and branch
+git pull origin main
+
+# Pull and fast-forward only (fail if can't)
+git pull --ff-only</pre>
+
+        <h3>fetch + merge vs pull</h3>
+        <table>
+            <tr>
+                <th>Approach</th>
+                <th>Commands</th>
+                <th>When to Use</th>
+            </tr>
+            <tr>
+                <td>Separate</td>
+                <td><code>git fetch</code> then <code>git merge origin/main</code></td>
+                <td>When you want to review changes first</td>
+            </tr>
+            <tr>
+                <td>Combined</td>
+                <td><code>git pull</code></td>
+                <td>When you trust the changes and want speed</td>
+            </tr>
+        </table>
+
+        <div class="highlight-box">
+            <strong>Recommendation:</strong> Many developers prefer <code>git pull --rebase</code> for a cleaner history. You can make it the default:
+            <pre style="margin: 10px 0 0 0;">git config --global pull.rebase true</pre>
+        </div>
+
+        <h2>git push - Uploading Changes</h2>
+        <p><code>git push</code> uploads your local commits to the remote repository.</p>
+
+        <pre>
+# Push to tracked remote branch
+git push
+
+# Push to specific remote and branch
+git push origin main
+
+# Push new branch and set up tracking
+git push -u origin feature/new-feature
+# -u (--set-upstream) links local branch to remote
+
+# Push all branches
+git push --all
+
+# Push tags
+git push --tags
+git push origin v1.0.0</pre>
+
+        <h3>When Push is Rejected</h3>
+        <p>Push can fail if the remote has commits you don't have:</p>
+
+        <pre>
+$ git push
+! [rejected]        main -> main (non-fast-forward)
+error: failed to push some refs to 'origin'
+hint: Updates were rejected because the tip of your current branch is behind</pre>
+
+        <p><strong>Solution:</strong></p>
+        <pre>
+# Option 1: Pull and merge/rebase, then push
+git pull --rebase
+git push
+
+# Option 2: If you're sure you want to overwrite (DANGEROUS!)
+git push --force-with-lease</pre>
+
+        <div class="danger-box">
+            <strong>Never use <code>git push --force</code> on shared branches!</strong>
+            <p>It overwrites remote history and can cause others to lose work. If you must force push, use <code>--force-with-lease</code> which fails if someone else pushed since your last fetch.</p>
+        </div>
+
+        <h2>Tracking Branches</h2>
+        <p>A tracking branch has a direct relationship to a remote branch. This enables <code>git pull</code> and <code>git push</code> without specifying remote/branch.</p>
+
+        <pre>
+# Set up tracking when pushing new branch
+git push -u origin feature/login
+
+# Set up tracking for existing branch
+git branch --set-upstream-to=origin/main main
+# or
+git branch -u origin/main
+
+# See tracking relationships
+git branch -vv
+
+# Output:
+#   main        abc123 [origin/main: ahead 2] Last commit message
+#   feature/x   def456 [origin/feature/x] Feature commit</pre>
+
+        <h2>Working with Forks</h2>
+        <p>Forking is common in open source. You fork (copy) a repository, make changes, then submit a pull request.</p>
+
+        <div class="workflow-box">
+            <h4>Fork Workflow</h4>
+            <pre style="background: transparent; color: white;">
+# 1. Fork the repository on GitHub (via web interface)
+
+# 2. Clone YOUR fork
+git clone https://github.com/YOUR-USERNAME/project.git
+
+# 3. Add the original repo as "upstream"
+git remote add upstream https://github.com/ORIGINAL/project.git
+
+# 4. Keep your fork updated
+git fetch upstream
+git checkout main
+git merge upstream/main
+git push origin main
+
+# 5. Create a feature branch, make changes, push to YOUR fork
+git checkout -b fix/bug-123
+# ...make changes...
+git push -u origin fix/bug-123
+
+# 6. Create Pull Request on GitHub (your fork → original repo)</pre>
+        </div>
+
+        <h2>Handling Merge Conflicts</h2>
+        <p>Conflicts occur when Git can't automatically merge changes because both sides modified the same lines.</p>
+
+        <h3>When Conflicts Happen</h3>
+        <ul>
+            <li>During <code>git pull</code> or <code>git merge</code></li>
+            <li>During <code>git rebase</code></li>
+            <li>During <code>git cherry-pick</code></li>
+        </ul>
+
+        <h3>Conflict Markers</h3>
+        <pre>
+&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD
+Your local changes
+=======
+Changes from remote/other branch
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; origin/main</pre>
+
+        <h3>Resolving Conflicts</h3>
+        <pre>
+# 1. See which files have conflicts
+git status
+
+# 2. Open each conflicted file and resolve
+#    - Remove the conflict markers (&lt;&lt;&lt;&lt;, ====, &gt;&gt;&gt;&gt;)
+#    - Keep the code you want (yours, theirs, or a combination)
+
+# 3. Stage the resolved files
+git add resolved-file.js
+
+# 4. Complete the merge/rebase
+git commit           # for merge
+git rebase --continue  # for rebase
+
+# To abort and start over
+git merge --abort
+git rebase --abort</pre>
+
+        <div class="success-box">
+            <strong>Tips for resolving conflicts:</strong>
+            <ul>
+                <li>Understand both changes before deciding</li>
+                <li>Often you need to combine both changes, not choose one</li>
+                <li>Talk to the other developer if unsure</li>
+                <li>Run tests after resolving to verify</li>
+                <li>Use a merge tool: <code>git mergetool</code></li>
+            </ul>
+        </div>
+
+        <h2>Common Collaboration Workflows</h2>
+
+        <h3>1. Centralized Workflow</h3>
+        <p>Everyone works on <code>main</code> (simple but risky):</p>
+        <pre>
+git pull
+# make changes
+git add .
+git commit -m "message"
+git push</pre>
+
+        <h3>2. Feature Branch Workflow</h3>
+        <p>Most common for teams. Each feature gets its own branch:</p>
+        <pre>
+# Create feature branch from main
+git checkout main
+git pull
+git checkout -b feature/user-auth
+
+# Work on feature
+git add .
+git commit -m "Add login form"
+git push -u origin feature/user-auth
+
+# Create PR, get review, merge
+# Then clean up
+git checkout main
+git pull
+git branch -d feature/user-auth</pre>
+
+        <h3>3. Gitflow Workflow</h3>
+        <p>Structured workflow with specific branch types:</p>
+        <ul>
+            <li><code>main</code> - Production code</li>
+            <li><code>develop</code> - Integration branch</li>
+            <li><code>feature/*</code> - New features (branch from develop)</li>
+            <li><code>release/*</code> - Preparing releases</li>
+            <li><code>hotfix/*</code> - Emergency production fixes</li>
+        </ul>
+
+        <h3>4. Trunk-Based Development</h3>
+        <p>Short-lived feature branches, frequent merges to main:</p>
+        <ul>
+            <li>Feature branches live for 1-2 days max</li>
+            <li>Merge to main frequently</li>
+            <li>Use feature flags for incomplete features</li>
+            <li>Continuous integration is essential</li>
+        </ul>
+
+        <h2>Checking Out Pull Requests Locally</h2>
+        <p>Sometimes you need to test someone's PR before it's merged:</p>
+
+        <pre>
+# Using GitHub PR number
+git fetch origin pull/123/head:pr-123
+git checkout pr-123
+
+# Now you can test the PR locally
+# When done, switch back
+git checkout main
+git branch -D pr-123</pre>
+
+        <h2>Quick Reference</h2>
+        <table>
+            <tr>
+                <th>Command</th>
+                <th>Purpose</th>
+            </tr>
+            <tr>
+                <td><code>git remote -v</code></td>
+                <td>List remotes with URLs</td>
+            </tr>
+            <tr>
+                <td><code>git fetch</code></td>
+                <td>Download without merging</td>
+            </tr>
+            <tr>
+                <td><code>git pull --rebase</code></td>
+                <td>Fetch and rebase</td>
+            </tr>
+            <tr>
+                <td><code>git push -u origin branch</code></td>
+                <td>Push new branch with tracking</td>
+            </tr>
+            <tr>
+                <td><code>git branch -vv</code></td>
+                <td>Show tracking relationships</td>
+            </tr>
+            <tr>
+                <td><code>git fetch --prune</code></td>
+                <td>Remove deleted remote branches</td>
+            </tr>
+        </table>
+
+        <h2>Key Takeaways</h2>
+        <div class="success-box">
+            <ol>
+                <li><strong>Fetch first:</strong> <code>git fetch</code> is safe - review before integrating</li>
+                <li><strong>Use <code>--rebase</code>:</strong> <code>git pull --rebase</code> keeps history clean</li>
+                <li><strong>Track your branches:</strong> Use <code>-u</code> when pushing new branches</li>
+                <li><strong>Never force push shared branches:</strong> Use <code>--force-with-lease</code> if necessary</li>
+                <li><strong>Resolve conflicts carefully:</strong> Understand both changes, test afterward</li>
+                <li><strong>Use feature branches:</strong> Keep main stable, work in branches</li>
+            </ol>
+        </div>
+
+        <div class="nav-links">
+            <a href="05-git-investigation-history.html">← Part 5: Investigation</a>
+            <a href="07-git-pr-code-review.html">Part 7: PR & Code Review →</a>
+        </div>
+    </div>
+</body>
+</html>

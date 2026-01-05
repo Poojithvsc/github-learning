@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Part 3: Git Branching & Merging</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            color: #333;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #e44d26;
+            border-bottom: 3px solid #e44d26;
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+        }
+        h2 {
+            color: #2c3e50;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            border-left: 4px solid #e44d26;
+            padding-left: 15px;
+        }
+        h3 {
+            color: #34495e;
+            margin-top: 25px;
+            margin-bottom: 15px;
+        }
+        p {
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+        .highlight-box {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        .info-box {
+            background: #d1ecf1;
+            border-left: 4px solid #17a2b8;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        .danger-box {
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        .success-box {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        code {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: 'Consolas', 'Monaco', monospace;
+        }
+        pre {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 20px 0;
+            font-family: 'Consolas', 'Monaco', monospace;
+        }
+        .diagram {
+            background: #f8f9fa;
+            border: 2px dashed #dee2e6;
+            padding: 30px;
+            margin: 25px 0;
+            border-radius: 8px;
+            font-family: 'Consolas', monospace;
+            overflow-x: auto;
+        }
+        ul, ol {
+            margin: 15px 0 15px 30px;
+        }
+        li {
+            margin-bottom: 10px;
+        }
+        .nav-links {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 2px solid #eee;
+        }
+        .nav-links a {
+            background: #e44d26;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+        .nav-links a:hover {
+            background: #c0392b;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background: #3498db;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+        .part-indicator {
+            background: #e44d26;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .comparison > div {
+            padding: 20px;
+            border-radius: 8px;
+        }
+        .comparison .merge-side {
+            background: #e3f2fd;
+            border: 2px solid #2196f3;
+        }
+        .comparison .rebase-side {
+            background: #f3e5f5;
+            border: 2px solid #9c27b0;
+        }
+        @media (max-width: 600px) {
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <span class="part-indicator">Part 3 of 7</span>
+        <h1>Git Branching & Merging</h1>
+
+        <p>Branching is where Git truly shines. Unlike other version control systems where branching is expensive and slow, Git branches are incredibly lightweight and fast to create.</p>
+
+        <h2>What is a Branch?</h2>
+        <p>A branch is simply a <strong>pointer to a commit</strong>. That's it! It's a 40-byte file containing the SHA-1 hash of the commit it points to.</p>
+
+        <div class="diagram">
+<pre>
+                          main
+                            ↓
+    A ← B ← C ← D ← E ← F (commit)
+                    ↑
+                 feature
+</pre>
+        </div>
+
+        <p>When you create a branch, Git just creates a new pointer. When you commit on a branch, that pointer moves forward to the new commit.</p>
+
+        <div class="success-box">
+            <strong>Why branches are powerful:</strong>
+            <ul>
+                <li>Work on features without affecting the main code</li>
+                <li>Experiment safely - delete the branch if it doesn't work out</li>
+                <li>Multiple team members can work simultaneously</li>
+                <li>Keep production code stable while developing new features</li>
+            </ul>
+        </div>
+
+        <h2>Branch Commands</h2>
+
+        <h3>Viewing Branches</h3>
+        <pre>
+# List local branches (* marks current branch)
+git branch
+
+# List all branches (including remote)
+git branch -a
+
+# List branches with last commit info
+git branch -v
+
+# List branches merged into current branch
+git branch --merged
+
+# List branches not yet merged
+git branch --no-merged</pre>
+
+        <h3>Creating Branches</h3>
+        <pre>
+# Create a new branch (doesn't switch to it)
+git branch feature/login
+
+# Create and switch to new branch (recommended)
+git switch -c feature/login
+
+# Old way (still works)
+git checkout -b feature/login
+
+# Create branch from specific commit
+git branch feature/login abc123</pre>
+
+        <h3>Switching Branches</h3>
+        <pre>
+# Switch to existing branch (new way)
+git switch main
+
+# Switch to existing branch (old way)
+git checkout main
+
+# Switch to previous branch
+git switch -</pre>
+
+        <div class="info-box">
+            <strong>switch vs checkout:</strong> <code>git switch</code> was introduced in Git 2.23 specifically for branch operations. <code>git checkout</code> does many things (switch branches, restore files, etc.), so <code>git switch</code> is clearer and safer.
+        </div>
+
+        <h3>Deleting Branches</h3>
+        <pre>
+# Delete a merged branch
+git branch -d feature/login
+
+# Force delete (even if not merged) - be careful!
+git branch -D feature/login
+
+# Delete remote branch
+git push origin --delete feature/login</pre>
+
+        <h3>Renaming Branches</h3>
+        <pre>
+# Rename current branch
+git branch -m new-name
+
+# Rename a specific branch
+git branch -m old-name new-name</pre>
+
+        <h2>Merging Branches</h2>
+        <p>Merging integrates changes from one branch into another.</p>
+
+        <h3>Basic Merge</h3>
+        <pre>
+# First, switch to the branch you want to merge INTO
+git switch main
+
+# Then merge the feature branch
+git merge feature/login</pre>
+
+        <h3>Types of Merges</h3>
+
+        <h4>1. Fast-Forward Merge</h4>
+        <p>When the target branch hasn't diverged, Git simply moves the pointer forward.</p>
+
+        <div class="diagram">
+<pre>
+Before:
+    main
+      ↓
+    A ← B ← C ← D ← E
+                    ↑
+                 feature
+
+After git merge feature:
+                    main
+                      ↓
+    A ← B ← C ← D ← E
+                    ↑
+                 feature
+</pre>
+        </div>
+
+        <p>No new commit is created - the branch pointer just moves forward.</p>
+
+        <h4>2. Three-Way Merge</h4>
+        <p>When branches have diverged, Git creates a new "merge commit" that combines both.</p>
+
+        <div class="diagram">
+<pre>
+Before:
+              main
+                ↓
+    A ← B ← C ← D
+          ↖
+            E ← F
+                ↑
+             feature
+
+After git merge feature:
+                    main
+                      ↓
+    A ← B ← C ← D ← G (merge commit)
+          ↖       ↗
+            E ← F
+                ↑
+             feature
+</pre>
+        </div>
+
+        <div class="highlight-box">
+            <strong>Force a merge commit:</strong> Use <code>git merge --no-ff feature</code> to always create a merge commit, even for fast-forwards. This preserves the history of the feature branch.
+        </div>
+
+        <h2>Rebasing</h2>
+        <p>Rebasing is another way to integrate changes. Instead of creating a merge commit, it <strong>replays your commits</strong> on top of another branch.</p>
+
+        <pre>
+# On feature branch, rebase onto main
+git switch feature
+git rebase main</pre>
+
+        <div class="diagram">
+<pre>
+Before:
+              main
+                ↓
+    A ← B ← C ← D
+          ↖
+            E ← F
+                ↑
+             feature
+
+After git rebase main (on feature):
+              main
+                ↓
+    A ← B ← C ← D ← E' ← F'
+                        ↑
+                     feature
+
+(E' and F' are copies of E and F with new commit IDs)
+</pre>
+        </div>
+
+        <h3>Merge vs Rebase</h3>
+
+        <div class="comparison">
+            <div class="merge-side">
+                <h4>Merge</h4>
+                <ul>
+                    <li>Creates merge commits</li>
+                    <li>Preserves exact history</li>
+                    <li>Non-destructive operation</li>
+                    <li>Can make history messy</li>
+                    <li>Safe for shared branches</li>
+                </ul>
+            </div>
+            <div class="rebase-side">
+                <h4>Rebase</h4>
+                <ul>
+                    <li>No merge commits</li>
+                    <li>Creates linear history</li>
+                    <li>Rewrites commit history</li>
+                    <li>Cleaner, easier to read</li>
+                    <li>Dangerous for shared branches</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="danger-box">
+            <strong>The Golden Rule of Rebasing:</strong><br>
+            <strong>Never rebase commits that have been pushed to a shared repository.</strong><br><br>
+            Rebasing rewrites commit history (creates new commit IDs). If others have based work on the original commits, they'll have conflicts.
+        </div>
+
+        <h3>When to Use Each</h3>
+        <table>
+            <tr>
+                <th>Scenario</th>
+                <th>Recommendation</th>
+            </tr>
+            <tr>
+                <td>Updating feature branch with main changes</td>
+                <td><code>git rebase main</code> (keeps history clean)</td>
+            </tr>
+            <tr>
+                <td>Merging feature into main/production</td>
+                <td><code>git merge feature</code> (preserves feature history)</td>
+            </tr>
+            <tr>
+                <td>Shared branch with other developers</td>
+                <td><code>git merge</code> (never rebase shared history)</td>
+            </tr>
+            <tr>
+                <td>Personal/local branch cleanup</td>
+                <td><code>git rebase -i</code> (clean up before sharing)</td>
+            </tr>
+        </table>
+
+        <h2>Interactive Rebase</h2>
+        <p>Interactive rebase (<code>git rebase -i</code>) lets you modify commits: reorder, edit, squash, or drop them.</p>
+
+        <pre>
+# Rebase last 3 commits interactively
+git rebase -i HEAD~3
+
+# Rebase all commits since branching from main
+git rebase -i main</pre>
+
+        <p>This opens an editor showing commits:</p>
+        <pre>
+pick abc123 Add login form
+pick def456 Fix typo in login
+pick ghi789 Add password validation
+
+# Commands:
+# p, pick = use commit
+# r, reword = use commit, but edit the commit message
+# e, edit = use commit, but stop for amending
+# s, squash = use commit, but meld into previous commit
+# f, fixup = like "squash", but discard this commit's log message
+# d, drop = remove commit</pre>
+
+        <div class="info-box">
+            <strong>Common use case - Squashing commits:</strong><br>
+            Before creating a PR, squash multiple "work in progress" commits into one clean commit:
+            <pre style="margin: 10px 0 0 0;">
+pick abc123 Add user authentication
+squash def456 WIP: auth continued
+squash ghi789 Fix auth tests</pre>
+            This combines all three into one commit with a clean message.
+        </div>
+
+        <h2>Cherry-Pick</h2>
+        <p>Cherry-pick applies a specific commit from one branch to another without merging everything.</p>
+
+        <pre>
+# Apply a specific commit to current branch
+git cherry-pick abc123
+
+# Cherry-pick multiple commits
+git cherry-pick abc123 def456
+
+# Cherry-pick without committing (stage the changes)
+git cherry-pick -n abc123</pre>
+
+        <div class="diagram">
+<pre>
+Before:
+    main: A ← B ← C
+
+    feature: A ← B ← D ← E ← F
+
+After cherry-picking E onto main:
+    main: A ← B ← C ← E'
+
+    feature: A ← B ← D ← E ← F
+</pre>
+        </div>
+
+        <div class="highlight-box">
+            <strong>When to use cherry-pick:</strong>
+            <ul>
+                <li>Apply a specific bug fix to multiple branches</li>
+                <li>Rescue commits from an abandoned branch</li>
+                <li>Backport features to older versions</li>
+            </ul>
+        </div>
+
+        <h2>Handling Merge Conflicts</h2>
+        <p>Conflicts happen when Git can't automatically merge changes because both branches modified the same part of a file.</p>
+
+        <h3>What a Conflict Looks Like</h3>
+        <pre>
+&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD
+function greet() {
+    return "Hello, World!";
+}
+=======
+function greet() {
+    return "Hi there!";
+}
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; feature/new-greeting</pre>
+
+        <ul>
+            <li><code>&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD</code>: Start of your changes (current branch)</li>
+            <li><code>=======</code>: Separator</li>
+            <li><code>&gt;&gt;&gt;&gt;&gt;&gt;&gt; feature</code>: End of incoming changes</li>
+        </ul>
+
+        <h3>Resolving Conflicts</h3>
+        <pre>
+# 1. See which files have conflicts
+git status
+
+# 2. Open the file and edit to resolve
+#    Remove the conflict markers and keep the code you want
+
+# 3. Mark as resolved by staging
+git add resolved-file.js
+
+# 4. Continue the merge/rebase
+git merge --continue
+# or
+git rebase --continue
+
+# To abort and go back to before the merge/rebase
+git merge --abort
+git rebase --abort</pre>
+
+        <div class="success-box">
+            <strong>Tips for resolving conflicts:</strong>
+            <ul>
+                <li>Read both versions carefully before choosing</li>
+                <li>Sometimes you need parts from both - manually combine them</li>
+                <li>Use <code>git diff</code> to understand what changed</li>
+                <li>Talk to teammates if unsure whose changes to keep</li>
+                <li>Run tests after resolving to ensure nothing broke</li>
+            </ul>
+        </div>
+
+        <h2>Branching Workflows</h2>
+
+        <h3>Feature Branch Workflow</h3>
+        <p>The most common workflow for teams:</p>
+        <ol>
+            <li>Create a branch from main for each feature</li>
+            <li>Work on the feature, committing regularly</li>
+            <li>Push the branch and create a Pull Request</li>
+            <li>After review, merge into main</li>
+            <li>Delete the feature branch</li>
+        </ol>
+
+        <pre>
+# Start a new feature
+git switch main
+git pull
+git switch -c feature/user-profile
+
+# Work on it...
+git add .
+git commit -m "Add user profile page"
+git push -u origin feature/user-profile
+
+# Create PR on GitHub/GitLab, get it reviewed and merged
+# Then clean up locally
+git switch main
+git pull
+git branch -d feature/user-profile</pre>
+
+        <h3>Git Flow</h3>
+        <p>A more structured workflow with specific branch types:</p>
+        <ul>
+            <li><code>main</code>: Production-ready code</li>
+            <li><code>develop</code>: Integration branch</li>
+            <li><code>feature/*</code>: New features</li>
+            <li><code>release/*</code>: Preparing releases</li>
+            <li><code>hotfix/*</code>: Emergency production fixes</li>
+        </ul>
+
+        <h2>Quick Reference</h2>
+        <table>
+            <tr>
+                <th>Command</th>
+                <th>Purpose</th>
+            </tr>
+            <tr>
+                <td><code>git branch</code></td>
+                <td>List branches</td>
+            </tr>
+            <tr>
+                <td><code>git switch -c &lt;name&gt;</code></td>
+                <td>Create and switch to branch</td>
+            </tr>
+            <tr>
+                <td><code>git switch &lt;name&gt;</code></td>
+                <td>Switch to existing branch</td>
+            </tr>
+            <tr>
+                <td><code>git merge &lt;branch&gt;</code></td>
+                <td>Merge branch into current</td>
+            </tr>
+            <tr>
+                <td><code>git rebase &lt;branch&gt;</code></td>
+                <td>Rebase current onto branch</td>
+            </tr>
+            <tr>
+                <td><code>git cherry-pick &lt;sha&gt;</code></td>
+                <td>Apply specific commit</td>
+            </tr>
+            <tr>
+                <td><code>git branch -d &lt;name&gt;</code></td>
+                <td>Delete merged branch</td>
+            </tr>
+        </table>
+
+        <h2>Key Takeaways</h2>
+        <div class="success-box">
+            <ol>
+                <li><strong>Branches are cheap:</strong> Create them freely for features, experiments, fixes</li>
+                <li><strong>Use descriptive names:</strong> <code>feature/user-auth</code>, <code>bugfix/login-crash</code></li>
+                <li><strong>Merge vs Rebase:</strong> Merge for shared history, rebase for clean local history</li>
+                <li><strong>Never rebase shared commits:</strong> Only rebase local, unpushed work</li>
+                <li><strong>Resolve conflicts carefully:</strong> Understand both changes before deciding</li>
+            </ol>
+        </div>
+
+        <div class="nav-links">
+            <a href="02-git-daily-workflow.html">← Part 2: Daily Workflow</a>
+            <a href="04-git-recovery-undo.html">Part 4: Recovery & Undo →</a>
+        </div>
+    </div>
+</body>
+</html>

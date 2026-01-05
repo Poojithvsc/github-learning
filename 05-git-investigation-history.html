@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Part 5: Git Investigation & History</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            color: #333;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #e44d26;
+            border-bottom: 3px solid #e44d26;
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+        }
+        h2 {
+            color: #2c3e50;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            border-left: 4px solid #e44d26;
+            padding-left: 15px;
+        }
+        h3 {
+            color: #34495e;
+            margin-top: 25px;
+            margin-bottom: 15px;
+        }
+        p {
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+        .highlight-box {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        .info-box {
+            background: #d1ecf1;
+            border-left: 4px solid #17a2b8;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        .danger-box {
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        .success-box {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        code {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: 'Consolas', 'Monaco', monospace;
+        }
+        pre {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 20px 0;
+            font-family: 'Consolas', 'Monaco', monospace;
+        }
+        ul, ol {
+            margin: 15px 0 15px 30px;
+        }
+        li {
+            margin-bottom: 10px;
+        }
+        .nav-links {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 2px solid #eee;
+        }
+        .nav-links a {
+            background: #e44d26;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+        .nav-links a:hover {
+            background: #c0392b;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background: #3498db;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+        .part-indicator {
+            background: #e44d26;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+        .output-example {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-family: 'Consolas', monospace;
+            font-size: 13px;
+            overflow-x: auto;
+        }
+        .output-example .sha {
+            color: #dcdcaa;
+        }
+        .output-example .author {
+            color: #4ec9b0;
+        }
+        .output-example .date {
+            color: #ce9178;
+        }
+        .output-example .branch {
+            color: #569cd6;
+        }
+        .output-example .message {
+            color: #d4d4d4;
+        }
+        .output-example .added {
+            color: #4ec9b0;
+        }
+        .output-example .removed {
+            color: #f14c4c;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <span class="part-indicator">Part 5 of 7</span>
+        <h1>Git Investigation & History</h1>
+
+        <p>Git's history is a powerful record of everything that happened in your project. Learning to navigate and investigate this history helps you understand code changes, find bugs, and collaborate effectively.</p>
+
+        <h2>git log - Exploring Commit History</h2>
+        <p>The <code>git log</code> command shows the commit history. It has many options to customize the output.</p>
+
+        <h3>Basic Log Commands</h3>
+        <pre>
+# Show full commit history
+git log
+
+# Compact one-line format
+git log --oneline
+
+# Show last N commits
+git log -5
+
+# Show commits with graph
+git log --graph
+
+# The most useful combination
+git log --oneline --graph --all</pre>
+
+        <h3>Sample Output</h3>
+        <div class="output-example">
+<pre>
+$ git log --oneline --graph --all
+
+<span class="branch">*</span>   <span class="sha">e5f6g7h</span> (<span class="branch">HEAD -> main</span>) Merge branch 'feature/auth'
+<span class="branch">|\</span>
+<span class="branch">| *</span> <span class="sha">d4e5f6g</span> (<span class="branch">feature/auth</span>) Add password validation
+<span class="branch">| *</span> <span class="sha">c3d4e5f</span> Add login form
+<span class="branch">|/</span>
+<span class="branch">*</span>   <span class="sha">b2c3d4e</span> Fix homepage bug
+<span class="branch">*</span>   <span class="sha">a1b2c3d</span> Initial commit
+</pre>
+        </div>
+
+        <h3>Formatting Log Output</h3>
+        <pre>
+# Show author and date
+git log --format="%h %an %ar %s"
+
+# Custom format
+git log --pretty=format:"%C(yellow)%h%C(reset) %C(blue)%an%C(reset) %s"
+
+# Show statistics (files changed, insertions, deletions)
+git log --stat
+
+# Show actual changes (patch)
+git log -p
+
+# Show changes for specific file
+git log -p -- filename.js</pre>
+
+        <h3>Common Format Placeholders</h3>
+        <table>
+            <tr>
+                <th>Placeholder</th>
+                <th>Description</th>
+            </tr>
+            <tr><td><code>%H / %h</code></td><td>Full / Short commit hash</td></tr>
+            <tr><td><code>%an / %ae</code></td><td>Author name / email</td></tr>
+            <tr><td><code>%ar / %ad</code></td><td>Relative / absolute date</td></tr>
+            <tr><td><code>%s</code></td><td>Subject (first line of message)</td></tr>
+            <tr><td><code>%b</code></td><td>Body of commit message</td></tr>
+            <tr><td><code>%d</code></td><td>Ref names (branches, tags)</td></tr>
+        </table>
+
+        <h3>Filtering Log Output</h3>
+        <pre>
+# Commits by author
+git log --author="John"
+
+# Commits in date range
+git log --since="2024-01-01" --until="2024-12-31"
+git log --since="2 weeks ago"
+
+# Commits containing text in message
+git log --grep="fix"
+git log --grep="bug" -i  # case insensitive
+
+# Commits that changed specific file
+git log -- path/to/file.js
+
+# Commits that added or removed text
+git log -S "functionName"  # "pickaxe" search
+
+# Commits by regex in code changes
+git log -G "function.*login"</pre>
+
+        <div class="info-box">
+            <strong>Useful alias:</strong> Add this to your <code>~/.gitconfig</code>:
+            <pre style="margin: 10px 0 0 0;">
+[alias]
+    lg = log --oneline --graph --all --decorate</pre>
+            Then use <code>git lg</code> for a beautiful history view.
+        </div>
+
+        <h2>git diff - Comparing Changes</h2>
+        <p><code>git diff</code> shows the differences between commits, branches, or files.</p>
+
+        <h3>Basic Diff Commands</h3>
+        <pre>
+# Show unstaged changes (working dir vs staging)
+git diff
+
+# Show staged changes (staging vs last commit)
+git diff --staged
+git diff --cached  # same as --staged
+
+# Show all changes (working dir vs last commit)
+git diff HEAD
+
+# Diff specific file
+git diff filename.js</pre>
+
+        <h3>Comparing Commits</h3>
+        <pre>
+# Diff between two commits
+git diff abc123 def456
+
+# Diff between commit and HEAD
+git diff abc123 HEAD
+
+# Diff last commit with its parent
+git diff HEAD~1 HEAD
+
+# Show only file names that changed
+git diff --name-only abc123 def456
+
+# Show file names with status (added, modified, deleted)
+git diff --name-status abc123 def456</pre>
+
+        <h3>Comparing Branches</h3>
+        <pre>
+# Diff between two branches
+git diff main feature/login
+
+# What changed in feature branch since it diverged from main
+git diff main...feature/login
+
+# Note the difference:
+# main..feature  = commits in feature but not in main
+# main...feature = changes since branches diverged</pre>
+
+        <div class="highlight-box">
+            <strong>Two dots vs Three dots:</strong>
+            <ul>
+                <li><code>main..feature</code>: Compare tips of both branches</li>
+                <li><code>main...feature</code>: Compare feature with merge-base (what's new in feature since branching)</li>
+            </ul>
+        </div>
+
+        <h3>Understanding Diff Output</h3>
+        <div class="output-example">
+<pre>
+diff --git a/src/app.js b/src/app.js
+index abc123..def456 100644
+--- a/src/app.js
++++ b/src/app.js
+@@ -10,7 +10,8 @@ function login(user, pass) {
+   if (!user || !pass) {
+     return false;
+   }
+<span class="removed">-  return authenticate(user, pass);</span>
+<span class="added">+  const result = authenticate(user, pass);</span>
+<span class="added">+  logAttempt(user, result);</span>
+<span class="added">+  return result;</span>
+ }
+</pre>
+        </div>
+
+        <ul>
+            <li><code>---</code> indicates the old file (a/)</li>
+            <li><code>+++</code> indicates the new file (b/)</li>
+            <li><code>@@</code> shows line numbers (old start,count / new start,count)</li>
+            <li><span style="color: red;">- red lines</span> were removed</li>
+            <li><span style="color: green;">+ green lines</span> were added</li>
+        </ul>
+
+        <h2>git blame - Line-by-Line History</h2>
+        <p><code>git blame</code> shows who last modified each line of a file and when. Useful for understanding code authorship and tracking down when bugs were introduced.</p>
+
+        <pre>
+# Show blame for entire file
+git blame filename.js
+
+# Show blame for specific lines
+git blame -L 10,20 filename.js
+
+# Show blame with email
+git blame -e filename.js
+
+# Ignore whitespace changes
+git blame -w filename.js
+
+# Show commit that moved/copied lines from another file
+git blame -C filename.js</pre>
+
+        <h3>Sample Blame Output</h3>
+        <div class="output-example">
+<pre>
+$ git blame src/login.js
+
+<span class="sha">a1b2c3d4</span> (<span class="author">John Doe</span>  <span class="date">2024-03-15</span>  1) function login(user, pass) {
+<span class="sha">a1b2c3d4</span> (<span class="author">John Doe</span>  <span class="date">2024-03-15</span>  2)   if (!user || !pass) {
+<span class="sha">b2c3d4e5</span> (<span class="author">Jane Smith</span> <span class="date">2024-04-20</span>  3)     throw new Error('Missing credentials');
+<span class="sha">a1b2c3d4</span> (<span class="author">John Doe</span>  <span class="date">2024-03-15</span>  4)   }
+<span class="sha">c3d4e5f6</span> (<span class="author">Bob Wilson</span> <span class="date">2024-05-10</span>  5)   return authenticate(user, pass);
+<span class="sha">a1b2c3d4</span> (<span class="author">John Doe</span>  <span class="date">2024-03-15</span>  6) }
+</pre>
+        </div>
+
+        <div class="info-box">
+            <strong>Pro tip:</strong> In most IDEs and editors, you can see blame annotations inline. VS Code has the GitLens extension which shows this information as you navigate code.
+        </div>
+
+        <h2>git show - Inspecting Objects</h2>
+        <p><code>git show</code> displays information about Git objects (commits, tags, etc.).</p>
+
+        <pre>
+# Show details of a commit
+git show abc123
+
+# Show only the commit message
+git show -s abc123
+
+# Show specific file at a commit
+git show abc123:path/to/file.js
+
+# Show tag information
+git show v1.0.0
+
+# Show what changed in HEAD commit
+git show HEAD</pre>
+
+        <h3>Sample Show Output</h3>
+        <div class="output-example">
+<pre>
+$ git show abc123
+
+<span class="sha">commit abc123def456...</span>
+Author: <span class="author">John Doe &lt;john@example.com&gt;</span>
+Date:   <span class="date">Mon Jan 15 10:30:00 2024 +0000</span>
+
+    <span class="message">Add password validation to login form
+
+    - Check minimum length (8 characters)
+    - Require at least one number
+    - Show error messages to user</span>
+
+diff --git a/src/login.js b/src/login.js
+...
+</pre>
+        </div>
+
+        <h2>git bisect - Finding Bug-Introducing Commits</h2>
+        <p><code>git bisect</code> uses binary search to find the commit that introduced a bug. This is incredibly powerful for large histories.</p>
+
+        <h3>How Bisect Works</h3>
+        <ol>
+            <li>You tell Git a "bad" commit (where the bug exists)</li>
+            <li>You tell Git a "good" commit (where the bug didn't exist)</li>
+            <li>Git checks out the middle commit</li>
+            <li>You test and mark it as good or bad</li>
+            <li>Git narrows down until it finds the first bad commit</li>
+        </ol>
+
+        <pre>
+# Start bisecting
+git bisect start
+
+# Mark current commit as bad (has the bug)
+git bisect bad
+
+# Mark a known good commit
+git bisect good abc123
+
+# Git will checkout a commit - test it, then:
+git bisect good  # if bug is NOT present
+git bisect bad   # if bug IS present
+
+# Repeat until Git finds the culprit
+# When done:
+git bisect reset</pre>
+
+        <h3>Automated Bisect</h3>
+        <p>If you have a test script that returns 0 for good and non-zero for bad:</p>
+        <pre>
+git bisect start
+git bisect bad HEAD
+git bisect good abc123
+git bisect run ./test-for-bug.sh</pre>
+
+        <div class="success-box">
+            <strong>Bisect is powerful because:</strong> Even with 1000 commits between good and bad, bisect finds the culprit in only ~10 steps (log₂(1000) ≈ 10).
+        </div>
+
+        <h2>git shortlog - Summary of Commits</h2>
+        <p><code>git shortlog</code> summarizes commits by author. Useful for changelogs and seeing who contributed what.</p>
+
+        <pre>
+# Group commits by author
+git shortlog
+
+# Just count commits per author
+git shortlog -s -n
+
+# Include all branches
+git shortlog --all
+
+# For a specific range
+git shortlog v1.0..v2.0</pre>
+
+        <div class="output-example">
+<pre>
+$ git shortlog -s -n
+
+    45  John Doe
+    32  Jane Smith
+    18  Bob Wilson
+     5  Alice Brown
+</pre>
+        </div>
+
+        <h2>Useful Investigation Commands</h2>
+
+        <h3>Find When a File Was Deleted</h3>
+        <pre>
+# Find the commit that deleted a file
+git log --all --full-history -- path/to/deleted-file.js
+
+# Restore the file
+git checkout &lt;commit-before-deletion&gt;^ -- path/to/deleted-file.js</pre>
+
+        <h3>Find All Commits That Touch a Function</h3>
+        <pre>
+# Search for changes to a function
+git log -p -S "functionName" -- "*.js"
+
+# Using regex
+git log -p -G "function\s+login"</pre>
+
+        <h3>See All Branches Containing a Commit</h3>
+        <pre>
+git branch --contains abc123
+
+# Include remote branches
+git branch -a --contains abc123</pre>
+
+        <h3>Find Common Ancestor</h3>
+        <pre>
+# Find the merge base of two branches
+git merge-base main feature/login</pre>
+
+        <h2>Quick Reference</h2>
+        <table>
+            <tr>
+                <th>Command</th>
+                <th>Purpose</th>
+            </tr>
+            <tr>
+                <td><code>git log --oneline --graph</code></td>
+                <td>Visual commit history</td>
+            </tr>
+            <tr>
+                <td><code>git log -p -- file</code></td>
+                <td>History with changes for file</td>
+            </tr>
+            <tr>
+                <td><code>git diff main...feature</code></td>
+                <td>Changes since branch diverged</td>
+            </tr>
+            <tr>
+                <td><code>git diff --name-only</code></td>
+                <td>Just list changed files</td>
+            </tr>
+            <tr>
+                <td><code>git blame file</code></td>
+                <td>Line-by-line authorship</td>
+            </tr>
+            <tr>
+                <td><code>git show commit</code></td>
+                <td>View commit details</td>
+            </tr>
+            <tr>
+                <td><code>git bisect</code></td>
+                <td>Find bug-introducing commit</td>
+            </tr>
+            <tr>
+                <td><code>git log -S "text"</code></td>
+                <td>Find commits adding/removing text</td>
+            </tr>
+        </table>
+
+        <h2>Key Takeaways</h2>
+        <div class="success-box">
+            <ol>
+                <li><strong>Use <code>git log --oneline --graph --all</code>:</strong> Best overview of project history</li>
+                <li><strong>Master <code>git diff</code>:</strong> Understand what changed between any two points</li>
+                <li><strong>Use <code>git blame</code> wisely:</strong> Find who changed code and when (not to blame, but to understand)</li>
+                <li><strong>Learn <code>git bisect</code>:</strong> Invaluable for tracking down when bugs were introduced</li>
+                <li><strong>Filter effectively:</strong> Use <code>--author</code>, <code>--since</code>, <code>--grep</code>, <code>-S</code> to find specific commits</li>
+            </ol>
+        </div>
+
+        <div class="nav-links">
+            <a href="04-git-recovery-undo.html">← Part 4: Recovery</a>
+            <a href="06-git-collaboration-remotes.html">Part 6: Collaboration →</a>
+        </div>
+    </div>
+</body>
+</html>

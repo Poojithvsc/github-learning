@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Part 4: Git Recovery & Undo Operations</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            color: #333;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #e44d26;
+            border-bottom: 3px solid #e44d26;
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+        }
+        h2 {
+            color: #2c3e50;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            border-left: 4px solid #e44d26;
+            padding-left: 15px;
+        }
+        h3 {
+            color: #34495e;
+            margin-top: 25px;
+            margin-bottom: 15px;
+        }
+        p {
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+        .highlight-box {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        .info-box {
+            background: #d1ecf1;
+            border-left: 4px solid #17a2b8;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        .danger-box {
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        .success-box {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        code {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: 'Consolas', 'Monaco', monospace;
+        }
+        pre {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 20px 0;
+            font-family: 'Consolas', 'Monaco', monospace;
+        }
+        .diagram {
+            background: #f8f9fa;
+            border: 2px dashed #dee2e6;
+            padding: 30px;
+            margin: 25px 0;
+            border-radius: 8px;
+            font-family: 'Consolas', monospace;
+            overflow-x: auto;
+        }
+        ul, ol {
+            margin: 15px 0 15px 30px;
+        }
+        li {
+            margin-bottom: 10px;
+        }
+        .nav-links {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 2px solid #eee;
+        }
+        .nav-links a {
+            background: #e44d26;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+        .nav-links a:hover {
+            background: #c0392b;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background: #3498db;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+        .part-indicator {
+            background: #e44d26;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+        .scenario-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 25px 0;
+        }
+        .scenario-box h4 {
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+        .scenario-box code {
+            background: rgba(255,255,255,0.2);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <span class="part-indicator">Part 4 of 7</span>
+        <h1>Git Recovery & Undo Operations</h1>
+
+        <p>Mistakes happen. Files get deleted, commits go wrong, and sometimes you just want to start over. Git has powerful tools to undo almost anything. This section is your safety net.</p>
+
+        <div class="success-box">
+            <strong>Good news:</strong> In Git, committed data is almost never truly lost. Even "deleted" commits can usually be recovered within 30 days (or longer).
+        </div>
+
+        <h2>Undo Cheat Sheet</h2>
+        <p>Here's a quick reference for common undo scenarios:</p>
+
+        <table>
+            <tr>
+                <th>Situation</th>
+                <th>Command</th>
+            </tr>
+            <tr>
+                <td>Discard changes in working directory</td>
+                <td><code>git restore &lt;file&gt;</code></td>
+            </tr>
+            <tr>
+                <td>Unstage a file (keep changes)</td>
+                <td><code>git restore --staged &lt;file&gt;</code></td>
+            </tr>
+            <tr>
+                <td>Undo last commit (keep changes staged)</td>
+                <td><code>git reset --soft HEAD~1</code></td>
+            </tr>
+            <tr>
+                <td>Undo last commit (keep changes unstaged)</td>
+                <td><code>git reset HEAD~1</code></td>
+            </tr>
+            <tr>
+                <td>Undo last commit (discard changes)</td>
+                <td><code>git reset --hard HEAD~1</code></td>
+            </tr>
+            <tr>
+                <td>Undo a pushed commit (safely)</td>
+                <td><code>git revert &lt;sha&gt;</code></td>
+            </tr>
+            <tr>
+                <td>Temporarily save work</td>
+                <td><code>git stash</code></td>
+            </tr>
+            <tr>
+                <td>Find lost commits</td>
+                <td><code>git reflog</code></td>
+            </tr>
+        </table>
+
+        <h2>git restore - Discarding Changes</h2>
+        <p><code>git restore</code> is the modern way to discard or unstage changes (introduced in Git 2.23).</p>
+
+        <h3>Discard Working Directory Changes</h3>
+        <pre>
+# Discard changes in a specific file
+git restore filename.js
+
+# Discard changes in multiple files
+git restore file1.js file2.js
+
+# Discard all changes in current directory
+git restore .
+
+# Restore a file to a specific commit's version
+git restore --source=abc123 filename.js</pre>
+
+        <div class="danger-box">
+            <strong>Warning:</strong> <code>git restore</code> permanently discards your uncommitted changes. There's no way to recover them!
+        </div>
+
+        <h3>Unstage Files</h3>
+        <pre>
+# Unstage a specific file (keep changes in working directory)
+git restore --staged filename.js
+
+# Unstage all files
+git restore --staged .
+
+# Old way (still works)
+git reset HEAD filename.js</pre>
+
+        <div class="diagram">
+<pre>
+Working Directory     Staging Area      Repository
+     [changes]    →    [staged]    →    [committed]
+         ↑                 ↑
+  git restore .    git restore --staged .
+</pre>
+        </div>
+
+        <h2>git stash - Temporarily Shelving Work</h2>
+        <p>Stash lets you save your current work without committing, so you can switch branches or pull updates.</p>
+
+        <h3>Basic Stash Operations</h3>
+        <pre>
+# Stash current changes
+git stash
+
+# Stash with a descriptive message
+git stash push -m "Work in progress on login feature"
+
+# Stash including untracked files
+git stash -u
+
+# Stash including ignored files too
+git stash -a</pre>
+
+        <h3>Retrieving Stashed Work</h3>
+        <pre>
+# List all stashes
+git stash list
+# Output:
+# stash@{0}: WIP on main: abc123 Last commit message
+# stash@{1}: On feature: def456 Another commit
+
+# Apply most recent stash (keeps stash in list)
+git stash apply
+
+# Apply and remove from stash list
+git stash pop
+
+# Apply a specific stash
+git stash apply stash@{2}
+
+# Show what's in a stash
+git stash show stash@{0}
+git stash show -p stash@{0}  # with diff</pre>
+
+        <h3>Managing Stashes</h3>
+        <pre>
+# Delete a specific stash
+git stash drop stash@{0}
+
+# Clear all stashes
+git stash clear
+
+# Create a branch from a stash
+git stash branch new-branch-name stash@{0}</pre>
+
+        <div class="scenario-box">
+            <h4>Scenario: Need to switch branches with uncommitted work</h4>
+            <pre style="background: transparent; color: white;">
+# You're working on feature branch with uncommitted changes
+# But you need to quickly fix a bug on main
+
+git stash push -m "Feature work in progress"
+git switch main
+
+# Fix the bug...
+git commit -m "Fix critical bug"
+git push
+
+# Return to your feature work
+git switch feature/my-feature
+git stash pop</pre>
+        </div>
+
+        <h2>git reset - Moving HEAD and Branches</h2>
+        <p><code>git reset</code> moves the branch pointer to a different commit. It has three modes that differ in how they handle the staging area and working directory.</p>
+
+        <h3>The Three Reset Modes</h3>
+
+        <table>
+            <tr>
+                <th>Mode</th>
+                <th>HEAD/Branch</th>
+                <th>Staging Area</th>
+                <th>Working Dir</th>
+                <th>Use Case</th>
+            </tr>
+            <tr>
+                <td><code>--soft</code></td>
+                <td>Moves</td>
+                <td>Unchanged</td>
+                <td>Unchanged</td>
+                <td>Redo the commit message or combine commits</td>
+            </tr>
+            <tr>
+                <td><code>--mixed</code> (default)</td>
+                <td>Moves</td>
+                <td>Reset</td>
+                <td>Unchanged</td>
+                <td>Unstage files, rework what to commit</td>
+            </tr>
+            <tr>
+                <td><code>--hard</code></td>
+                <td>Moves</td>
+                <td>Reset</td>
+                <td>Reset</td>
+                <td>Completely discard commits and changes</td>
+            </tr>
+        </table>
+
+        <h3>Reset Examples</h3>
+        <pre>
+# Undo last commit, keep changes staged
+git reset --soft HEAD~1
+
+# Undo last commit, keep changes unstaged
+git reset HEAD~1        # or: git reset --mixed HEAD~1
+
+# Undo last commit, discard all changes (DANGEROUS!)
+git reset --hard HEAD~1
+
+# Reset to a specific commit
+git reset --hard abc123
+
+# Reset to match remote branch exactly
+git reset --hard origin/main</pre>
+
+        <div class="diagram">
+<pre>
+Before: HEAD → A ← B ← C ← D (you are here)
+
+After git reset --soft HEAD~2:
+                  HEAD
+                    ↓
+        A ← B ← C ← D
+              ↑
+           branch     (C and D changes are staged)
+
+After git reset --hard HEAD~2:
+              HEAD
+                ↓
+        A ← B (branch)    (C and D are "gone")
+</pre>
+        </div>
+
+        <div class="danger-box">
+            <strong>Warning about --hard:</strong>
+            <ul>
+                <li><code>git reset --hard</code> discards uncommitted changes permanently</li>
+                <li>If you've pushed commits, others may have them - coordinate before resetting!</li>
+                <li>Commits aren't truly deleted - use <code>git reflog</code> to recover</li>
+            </ul>
+        </div>
+
+        <h3>Common Reset Scenarios</h3>
+
+        <div class="scenario-box">
+            <h4>Scenario: Made a commit but want to add more changes</h4>
+            <pre style="background: transparent; color: white;">
+# Undo the commit but keep everything staged
+git reset --soft HEAD~1
+
+# Make your additional changes
+# ...edit files...
+
+# Stage the new changes
+git add .
+
+# Commit again with all changes
+git commit -m "Complete feature with all changes"</pre>
+        </div>
+
+        <div class="scenario-box">
+            <h4>Scenario: Committed to wrong branch</h4>
+            <pre style="background: transparent; color: white;">
+# You accidentally committed to main instead of feature
+
+# First, save the commit hash
+git log -1  # note the commit SHA
+
+# Undo the commit on main (keep changes)
+git reset --soft HEAD~1
+
+# Stash the changes
+git stash
+
+# Switch to the correct branch
+git switch feature/my-feature
+
+# Apply the changes
+git stash pop
+
+# Commit on the right branch
+git commit -m "Add feature"</pre>
+        </div>
+
+        <h2>git revert - Safe Undo for Pushed Commits</h2>
+        <p><code>git revert</code> creates a <strong>new commit</strong> that undoes the changes from a previous commit. It doesn't rewrite history, making it safe for shared branches.</p>
+
+        <pre>
+# Revert a specific commit
+git revert abc123
+
+# Revert the last commit
+git revert HEAD
+
+# Revert without auto-commit (lets you modify)
+git revert -n abc123
+
+# Revert a merge commit (specify which parent to keep)
+git revert -m 1 abc123</pre>
+
+        <div class="diagram">
+<pre>
+Before: A ← B ← C ← D (HEAD)
+        (C introduced a bug)
+
+After git revert C:
+        A ← B ← C ← D ← C' (HEAD)
+        (C' undoes C's changes)
+</pre>
+        </div>
+
+        <h3>Reset vs Revert</h3>
+        <table>
+            <tr>
+                <th>Aspect</th>
+                <th>git reset</th>
+                <th>git revert</th>
+            </tr>
+            <tr>
+                <td>History</td>
+                <td>Rewrites (removes commits)</td>
+                <td>Preserves (adds new commit)</td>
+            </tr>
+            <tr>
+                <td>Safe for pushed?</td>
+                <td>No - causes issues for others</td>
+                <td>Yes - safe for shared branches</td>
+            </tr>
+            <tr>
+                <td>Use case</td>
+                <td>Local cleanup before pushing</td>
+                <td>Undo public/pushed commits</td>
+            </tr>
+        </table>
+
+        <div class="highlight-box">
+            <strong>Rule of thumb:</strong>
+            <ul>
+                <li>Use <code>git reset</code> for local commits that haven't been pushed</li>
+                <li>Use <code>git revert</code> for commits that have been pushed/shared</li>
+            </ul>
+        </div>
+
+        <h2>git reflog - Your Safety Net</h2>
+        <p>The reflog (reference log) records every change to HEAD. Even after <code>git reset --hard</code>, you can usually recover commits using reflog.</p>
+
+        <pre>
+# Show reflog
+git reflog
+
+# Output example:
+abc123 HEAD@{0}: reset: moving to HEAD~2
+def456 HEAD@{1}: commit: Add user profile
+ghi789 HEAD@{2}: commit: Fix login bug
+jkl012 HEAD@{3}: checkout: moving from main to feature</pre>
+
+        <h3>Recovering Lost Commits</h3>
+        <pre>
+# Find the commit you want to recover in reflog
+git reflog
+
+# Option 1: Reset to that commit
+git reset --hard HEAD@{2}
+
+# Option 2: Create a branch at that commit
+git branch recovered-work abc123
+
+# Option 3: Cherry-pick specific commits
+git cherry-pick abc123</pre>
+
+        <div class="scenario-box">
+            <h4>Scenario: Accidentally used reset --hard and lost work</h4>
+            <pre style="background: transparent; color: white;">
+# Oh no! I just ran:
+git reset --hard HEAD~3
+
+# Don't panic! Use reflog to find your commits
+git reflog
+
+# Find the commit before the reset (HEAD@{1} or earlier)
+# Then recover:
+git reset --hard HEAD@{1}</pre>
+        </div>
+
+        <div class="info-box">
+            <strong>Reflog retention:</strong> By default, reflog entries are kept for 90 days. After that, Git may garbage collect them. Don't wait too long to recover!
+        </div>
+
+        <h2>git clean - Removing Untracked Files</h2>
+        <p><code>git clean</code> removes untracked files from your working directory.</p>
+
+        <pre>
+# See what would be deleted (dry run) - ALWAYS DO THIS FIRST
+git clean -n
+
+# Remove untracked files
+git clean -f
+
+# Remove untracked files and directories
+git clean -fd
+
+# Remove ignored files too
+git clean -fX
+
+# Remove everything untracked (files, dirs, ignored)
+git clean -fdx
+
+# Interactive mode
+git clean -i</pre>
+
+        <div class="danger-box">
+            <strong>Warning:</strong> <code>git clean</code> permanently deletes files. Always use <code>-n</code> (dry run) first to see what will be deleted!
+        </div>
+
+        <h2>Recovering Deleted Files</h2>
+
+        <h3>File deleted but not committed</h3>
+        <pre>
+# Restore a deleted file from last commit
+git restore deleted-file.js
+
+# Restore all deleted files
+git restore .</pre>
+
+        <h3>File deleted in a previous commit</h3>
+        <pre>
+# Find when the file was deleted
+git log --all --full-history -- path/to/file.js
+
+# Restore from the commit before deletion
+git restore --source=abc123^ -- path/to/file.js
+
+# Or checkout from that commit
+git checkout abc123^ -- path/to/file.js</pre>
+
+        <h2>Common Recovery Scenarios</h2>
+
+        <div class="scenario-box">
+            <h4>Scenario: Amend the last commit message</h4>
+            <pre style="background: transparent; color: white;">
+git commit --amend -m "New, corrected message"
+
+# Or to open editor:
+git commit --amend</pre>
+        </div>
+
+        <div class="scenario-box">
+            <h4>Scenario: Add forgotten file to last commit</h4>
+            <pre style="background: transparent; color: white;">
+git add forgotten-file.js
+git commit --amend --no-edit</pre>
+        </div>
+
+        <div class="scenario-box">
+            <h4>Scenario: Undo a merge</h4>
+            <pre style="background: transparent; color: white;">
+# If merge not yet committed (during conflicts)
+git merge --abort
+
+# If merge was committed but not pushed
+git reset --hard HEAD~1
+
+# If merge was pushed (create revert commit)
+git revert -m 1 &lt;merge-commit-sha&gt;</pre>
+        </div>
+
+        <div class="scenario-box">
+            <h4>Scenario: Undo a rebase</h4>
+            <pre style="background: transparent; color: white;">
+# During rebase (with conflicts)
+git rebase --abort
+
+# After rebase completed - use reflog
+git reflog
+# Find the commit before rebase started
+git reset --hard HEAD@{n}</pre>
+        </div>
+
+        <h2>Quick Reference</h2>
+        <table>
+            <tr>
+                <th>Command</th>
+                <th>Purpose</th>
+            </tr>
+            <tr>
+                <td><code>git restore &lt;file&gt;</code></td>
+                <td>Discard working directory changes</td>
+            </tr>
+            <tr>
+                <td><code>git restore --staged &lt;file&gt;</code></td>
+                <td>Unstage file</td>
+            </tr>
+            <tr>
+                <td><code>git stash</code></td>
+                <td>Save work temporarily</td>
+            </tr>
+            <tr>
+                <td><code>git stash pop</code></td>
+                <td>Restore stashed work</td>
+            </tr>
+            <tr>
+                <td><code>git reset --soft HEAD~1</code></td>
+                <td>Undo commit, keep staged</td>
+            </tr>
+            <tr>
+                <td><code>git reset --hard HEAD~1</code></td>
+                <td>Undo commit, discard changes</td>
+            </tr>
+            <tr>
+                <td><code>git revert &lt;sha&gt;</code></td>
+                <td>Safely undo pushed commit</td>
+            </tr>
+            <tr>
+                <td><code>git reflog</code></td>
+                <td>Find lost commits</td>
+            </tr>
+        </table>
+
+        <h2>Key Takeaways</h2>
+        <div class="success-box">
+            <ol>
+                <li><strong>Use <code>git restore</code> for working directory:</strong> Discard changes or unstage files</li>
+                <li><strong>Stash is your friend:</strong> Save work temporarily without committing</li>
+                <li><strong>Know your reset modes:</strong> --soft (keep staged), --mixed (keep unstaged), --hard (discard)</li>
+                <li><strong>Revert for shared history:</strong> Never reset pushed commits, use revert instead</li>
+                <li><strong>Reflog is your safety net:</strong> Almost nothing is truly lost in Git</li>
+            </ol>
+        </div>
+
+        <div class="nav-links">
+            <a href="03-git-branching-merging.html">← Part 3: Branching</a>
+            <a href="05-git-investigation-history.html">Part 5: Investigation →</a>
+        </div>
+    </div>
+</body>
+</html>

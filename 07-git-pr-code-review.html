@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Part 7: Pull Requests & Code Review</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            color: #333;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #e44d26;
+            border-bottom: 3px solid #e44d26;
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+        }
+        h2 {
+            color: #2c3e50;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            border-left: 4px solid #e44d26;
+            padding-left: 15px;
+        }
+        h3 {
+            color: #34495e;
+            margin-top: 25px;
+            margin-bottom: 15px;
+        }
+        p {
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+        .highlight-box {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        .info-box {
+            background: #d1ecf1;
+            border-left: 4px solid #17a2b8;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        .danger-box {
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        .success-box {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        code {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: 'Consolas', 'Monaco', monospace;
+        }
+        pre {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 20px 0;
+            font-family: 'Consolas', 'Monaco', monospace;
+        }
+        ul, ol {
+            margin: 15px 0 15px 30px;
+        }
+        li {
+            margin-bottom: 10px;
+        }
+        .nav-links {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 2px solid #eee;
+        }
+        .nav-links a {
+            background: #e44d26;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+        .nav-links a:hover {
+            background: #c0392b;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background: #3498db;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+        .part-indicator {
+            background: #e44d26;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+        .pr-template {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 25px;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-family: 'Consolas', monospace;
+        }
+        .pr-template h4 {
+            color: #569cd6;
+            margin-bottom: 10px;
+        }
+        .checklist {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .checklist label {
+            display: block;
+            margin: 8px 0;
+            cursor: pointer;
+        }
+        .checklist input[type="checkbox"] {
+            margin-right: 10px;
+        }
+        .feedback-example {
+            background: #f0f0f0;
+            border-left: 4px solid #6c757d;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        .feedback-example.good {
+            border-left-color: #28a745;
+            background: #f0fff0;
+        }
+        .feedback-example.bad {
+            border-left-color: #dc3545;
+            background: #fff0f0;
+        }
+        .prefix-tag {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-right: 5px;
+        }
+        .prefix-nit { background: #e0e0e0; color: #333; }
+        .prefix-suggestion { background: #d1ecf1; color: #0c5460; }
+        .prefix-blocking { background: #f8d7da; color: #721c24; }
+        .prefix-question { background: #fff3cd; color: #856404; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <span class="part-indicator">Part 7 of 7</span>
+        <h1>Pull Requests & Code Review</h1>
+
+        <p>Pull Requests (PRs) - also called Merge Requests in GitLab - are at the heart of collaborative development. They let you propose changes, get feedback, and maintain code quality through review.</p>
+
+        <h2>What is a Pull Request?</h2>
+        <p>A Pull Request is a request to merge your branch into another branch (usually <code>main</code>). It provides:</p>
+        <ul>
+            <li>A place to discuss proposed changes</li>
+            <li>Code review before merging</li>
+            <li>Automated testing (CI/CD) integration</li>
+            <li>Documentation of why changes were made</li>
+        </ul>
+
+        <h2>Creating a Good Pull Request</h2>
+
+        <h3>Before Creating the PR</h3>
+        <ol>
+            <li><strong>Keep it small:</strong> Ideal PRs are under 400 lines. Large PRs are hard to review well.</li>
+            <li><strong>One concern per PR:</strong> Don't mix unrelated changes.</li>
+            <li><strong>Update with main:</strong> Rebase or merge main into your branch before opening.</li>
+            <li><strong>Run tests locally:</strong> Don't waste reviewers' time with broken code.</li>
+            <li><strong>Self-review first:</strong> Look at your own diff before asking others.</li>
+        </ol>
+
+        <pre>
+# Update your branch with latest main before PR
+git checkout main
+git pull
+git checkout feature/my-feature
+git rebase main
+# or: git merge main
+
+# Verify tests pass
+npm test
+
+# Push to remote
+git push origin feature/my-feature</pre>
+
+        <h3>Writing the PR Description</h3>
+
+        <div class="pr-template">
+            <h4>## Summary</h4>
+            <p>Brief description of what this PR does and why.</p>
+
+            <h4>## Changes</h4>
+            <p>- Added user authentication endpoint<br>
+            - Created login form component<br>
+            - Added password validation</p>
+
+            <h4>## How to Test</h4>
+            <p>1. Start the dev server: <code>npm run dev</code><br>
+            2. Navigate to /login<br>
+            3. Try logging in with test@example.com / password123</p>
+
+            <h4>## Screenshots (if applicable)</h4>
+            <p>[Add screenshots for UI changes]</p>
+
+            <h4>## Related Issues</h4>
+            <p>Closes #123<br>
+            Related to #456</p>
+        </div>
+
+        <div class="success-box">
+            <strong>Good PR Description Checklist:</strong>
+            <ul>
+                <li><strong>What:</strong> What does this PR change?</li>
+                <li><strong>Why:</strong> Why is this change needed?</li>
+                <li><strong>How:</strong> How can reviewers test it?</li>
+                <li><strong>Context:</strong> Link to related issues/discussions</li>
+            </ul>
+        </div>
+
+        <h3>PR Size Guidelines</h3>
+        <table>
+            <tr>
+                <th>Size</th>
+                <th>Lines Changed</th>
+                <th>Review Quality</th>
+            </tr>
+            <tr>
+                <td>Small</td>
+                <td>1-100</td>
+                <td>Excellent - easy to review thoroughly</td>
+            </tr>
+            <tr>
+                <td>Medium</td>
+                <td>100-400</td>
+                <td>Good - reviewable with focus</td>
+            </tr>
+            <tr>
+                <td>Large</td>
+                <td>400-1000</td>
+                <td>Poor - hard to review well</td>
+            </tr>
+            <tr>
+                <td>Huge</td>
+                <td>1000+</td>
+                <td>Very Poor - consider splitting</td>
+            </tr>
+        </table>
+
+        <div class="highlight-box">
+            <strong>Splitting Large PRs:</strong>
+            <ul>
+                <li>Split by layer: database → backend → frontend</li>
+                <li>Split by feature: core logic → error handling → tests</li>
+                <li>Ship refactoring separately from new features</li>
+            </ul>
+        </div>
+
+        <h2>Reviewing Pull Requests</h2>
+
+        <h3>Review Priorities</h3>
+        <p>Review in order of importance:</p>
+
+        <ol>
+            <li><strong>Correctness:</strong> Does it work? Does it do what it claims?</li>
+            <li><strong>Design:</strong> Is the architecture appropriate? Will it scale?</li>
+            <li><strong>Readability:</strong> Is it clear and maintainable?</li>
+            <li><strong>Tests:</strong> Are there adequate tests? Do they test the right things?</li>
+            <li><strong>Security:</strong> Any vulnerabilities? Input validation? Auth checks?</li>
+            <li><strong>Style:</strong> Formatting, naming conventions (usually automated)</li>
+        </ol>
+
+        <h3>What to Look For</h3>
+
+        <div class="checklist">
+            <h4>Code Review Checklist</h4>
+            <label><input type="checkbox"> Does the code actually solve the problem/implement the feature?</label>
+            <label><input type="checkbox"> Are there any obvious bugs or logic errors?</label>
+            <label><input type="checkbox"> Is error handling appropriate?</label>
+            <label><input type="checkbox"> Are edge cases considered?</label>
+            <label><input type="checkbox"> Is the code readable and well-organized?</label>
+            <label><input type="checkbox"> Are names descriptive and consistent?</label>
+            <label><input type="checkbox"> Are there adequate tests?</label>
+            <label><input type="checkbox"> Are there any security concerns?</label>
+            <label><input type="checkbox"> Will this scale if needed?</label>
+            <label><input type="checkbox"> Is documentation updated if needed?</label>
+        </div>
+
+        <h3>Checking Out PRs Locally</h3>
+        <p>Sometimes you need to run the code locally to properly review:</p>
+
+        <pre>
+# Method 1: Fetch and checkout the PR branch
+git fetch origin pull/123/head:pr-123
+git checkout pr-123
+
+# Method 2: If the author's branch is accessible
+git fetch origin feature/their-branch
+git checkout feature/their-branch
+
+# Run tests, try the feature, etc.
+npm install
+npm test
+npm run dev
+
+# When done
+git checkout main
+git branch -D pr-123</pre>
+
+        <h2>Giving Effective Feedback</h2>
+
+        <h3>Use Prefixes to Clarify Intent</h3>
+        <table>
+            <tr>
+                <th>Prefix</th>
+                <th>Meaning</th>
+                <th>Response Expected</th>
+            </tr>
+            <tr>
+                <td><span class="prefix-tag prefix-blocking">blocking:</span></td>
+                <td>Must be fixed before merging</td>
+                <td>Fix required</td>
+            </tr>
+            <tr>
+                <td><span class="prefix-tag prefix-suggestion">suggestion:</span></td>
+                <td>Consider this improvement</td>
+                <td>Optional, discuss if needed</td>
+            </tr>
+            <tr>
+                <td><span class="prefix-tag prefix-nit">nit:</span></td>
+                <td>Minor nitpick</td>
+                <td>Fix or ignore</td>
+            </tr>
+            <tr>
+                <td><span class="prefix-tag prefix-question">question:</span></td>
+                <td>Seeking understanding</td>
+                <td>Explanation requested</td>
+            </tr>
+        </table>
+
+        <h3>Good vs Bad Feedback</h3>
+
+        <div class="feedback-example bad">
+            <strong>Bad:</strong> "This is wrong."
+        </div>
+        <div class="feedback-example good">
+            <strong>Good:</strong> "<span class="prefix-tag prefix-blocking">blocking:</span> This will throw a null pointer exception when <code>user</code> is undefined. Consider adding a null check or using optional chaining: <code>user?.name</code>"
+        </div>
+
+        <div class="feedback-example bad">
+            <strong>Bad:</strong> "Why did you do it this way?"
+        </div>
+        <div class="feedback-example good">
+            <strong>Good:</strong> "<span class="prefix-tag prefix-question">question:</span> I see you're using a loop here instead of <code>Array.map()</code>. Is there a specific reason? Just curious if there's a performance consideration I'm missing."
+        </div>
+
+        <div class="feedback-example bad">
+            <strong>Bad:</strong> "Change this variable name."
+        </div>
+        <div class="feedback-example good">
+            <strong>Good:</strong> "<span class="prefix-tag prefix-nit">nit:</span> Consider renaming <code>x</code> to <code>userCount</code> for clarity. This would make the code more self-documenting."
+        </div>
+
+        <div class="info-box">
+            <strong>Feedback Guidelines:</strong>
+            <ul>
+                <li><strong>Explain why:</strong> Don't just say what to change, explain why</li>
+                <li><strong>Be specific:</strong> Point to exact lines and offer alternatives</li>
+                <li><strong>Be kind:</strong> Criticize code, not people</li>
+                <li><strong>Ask questions:</strong> You might be missing context</li>
+                <li><strong>Praise good code:</strong> Point out things done well</li>
+            </ul>
+        </div>
+
+        <h2>Responding to Reviews</h2>
+
+        <h3>As the PR Author</h3>
+        <ul>
+            <li><strong>Don't take it personally:</strong> Feedback is about code, not you</li>
+            <li><strong>Respond to every comment:</strong> Even if just "Done" or "Good point"</li>
+            <li><strong>Ask for clarification:</strong> If you don't understand feedback</li>
+            <li><strong>Push fixes, don't squash yet:</strong> Makes it easy to see what changed</li>
+            <li><strong>Explain if you disagree:</strong> But be open to being wrong</li>
+        </ul>
+
+        <h3>Handling Disagreements</h3>
+        <p>When you disagree with feedback:</p>
+        <ol>
+            <li>Understand their concern first</li>
+            <li>Explain your reasoning clearly</li>
+            <li>Propose a compromise if possible</li>
+            <li>Escalate to the team if needed (don't let it block progress)</li>
+            <li>Accept that reasonable people can disagree</li>
+        </ol>
+
+        <h2>CI/CD Integration</h2>
+        <p>Most teams require automated checks to pass before merging:</p>
+
+        <h3>Common CI Checks</h3>
+        <ul>
+            <li><strong>Tests:</strong> Unit, integration, and E2E tests</li>
+            <li><strong>Linting:</strong> Code style and formatting</li>
+            <li><strong>Type checking:</strong> TypeScript or Flow errors</li>
+            <li><strong>Build:</strong> Ensure the project builds successfully</li>
+            <li><strong>Security:</strong> Dependency vulnerability scanning</li>
+            <li><strong>Coverage:</strong> Test coverage thresholds</li>
+        </ul>
+
+        <div class="danger-box">
+            <strong>Never merge with failing CI!</strong> If tests are failing, fix them. If they're flaky, fix that too. Green CI should be a requirement for merging.
+        </div>
+
+        <h2>Merging Strategies</h2>
+
+        <h3>Merge Commit</h3>
+        <pre>git merge feature --no-ff</pre>
+        <ul>
+            <li>Creates a merge commit</li>
+            <li>Preserves complete history</li>
+            <li>Easy to revert the entire feature</li>
+        </ul>
+
+        <h3>Squash and Merge</h3>
+        <pre>git merge feature --squash</pre>
+        <ul>
+            <li>Combines all commits into one</li>
+            <li>Clean linear history</li>
+            <li>Loses individual commit history</li>
+        </ul>
+
+        <h3>Rebase and Merge</h3>
+        <pre>git rebase main && git merge feature --ff</pre>
+        <ul>
+            <li>Replays commits on top of main</li>
+            <li>Linear history with all commits</li>
+            <li>Can cause issues with force pushes</li>
+        </ul>
+
+        <table>
+            <tr>
+                <th>Strategy</th>
+                <th>Best For</th>
+            </tr>
+            <tr>
+                <td>Merge Commit</td>
+                <td>When you want to preserve feature branch history</td>
+            </tr>
+            <tr>
+                <td>Squash</td>
+                <td>When feature has many WIP commits you want to clean up</td>
+            </tr>
+            <tr>
+                <td>Rebase</td>
+                <td>When you want linear history with all commits visible</td>
+            </tr>
+        </table>
+
+        <h2>Post-Merge Cleanup</h2>
+        <pre>
+# After PR is merged, clean up locally
+git checkout main
+git pull
+
+# Delete local feature branch
+git branch -d feature/my-feature
+
+# Delete remote branch (if not auto-deleted)
+git push origin --delete feature/my-feature
+
+# Prune deleted remote branches
+git fetch --prune</pre>
+
+        <h2>PR Etiquette Summary</h2>
+
+        <div class="success-box">
+            <h4>For PR Authors:</h4>
+            <ul>
+                <li>Keep PRs small and focused</li>
+                <li>Write clear descriptions</li>
+                <li>Test before requesting review</li>
+                <li>Respond promptly to feedback</li>
+                <li>Be open to suggestions</li>
+            </ul>
+        </div>
+
+        <div class="success-box">
+            <h4>For Reviewers:</h4>
+            <ul>
+                <li>Review promptly (within 24 hours)</li>
+                <li>Be constructive and kind</li>
+                <li>Use prefixes (nit, blocking, suggestion)</li>
+                <li>Explain the "why"</li>
+                <li>Approve when satisfied, don't nitpick forever</li>
+            </ul>
+        </div>
+
+        <h2>Key Takeaways</h2>
+        <div class="success-box">
+            <ol>
+                <li><strong>Small PRs get better reviews:</strong> Aim for under 400 lines</li>
+                <li><strong>Good descriptions save time:</strong> What, why, and how to test</li>
+                <li><strong>Review thoughtfully:</strong> Correctness → Design → Readability → Tests</li>
+                <li><strong>Use prefixes:</strong> blocking, suggestion, nit, question</li>
+                <li><strong>Be kind:</strong> Critique code, not people</li>
+                <li><strong>CI must pass:</strong> Never merge red builds</li>
+            </ol>
+        </div>
+
+        <div class="nav-links">
+            <a href="06-git-collaboration-remotes.html">← Part 6: Collaboration</a>
+            <a href="08-git-feynman-revision.html">Feynman Revision →</a>
+        </div>
+    </div>
+</body>
+</html>

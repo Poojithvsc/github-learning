@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Part 2: Git Daily Workflow</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            color: #333;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #e44d26;
+            border-bottom: 3px solid #e44d26;
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+        }
+        h2 {
+            color: #2c3e50;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            border-left: 4px solid #e44d26;
+            padding-left: 15px;
+        }
+        h3 {
+            color: #34495e;
+            margin-top: 25px;
+            margin-bottom: 15px;
+        }
+        p {
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+        .highlight-box {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        .info-box {
+            background: #d1ecf1;
+            border-left: 4px solid #17a2b8;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        .danger-box {
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        .success-box {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        code {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: 'Consolas', 'Monaco', monospace;
+        }
+        pre {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 20px 0;
+            font-family: 'Consolas', 'Monaco', monospace;
+        }
+        .command-box {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #00ff88;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-family: 'Consolas', monospace;
+        }
+        .command-box .comment {
+            color: #888;
+        }
+        ul, ol {
+            margin: 15px 0 15px 30px;
+        }
+        li {
+            margin-bottom: 10px;
+        }
+        .nav-links {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 2px solid #eee;
+        }
+        .nav-links a {
+            background: #e44d26;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+        .nav-links a:hover {
+            background: #c0392b;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background: #3498db;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+        .part-indicator {
+            background: #e44d26;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+        .workflow-diagram {
+            background: #f8f9fa;
+            border: 2px solid #dee2e6;
+            padding: 30px;
+            margin: 25px 0;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .file-status {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            margin: 2px;
+        }
+        .status-untracked { background: #6c757d; color: white; }
+        .status-modified { background: #ffc107; color: black; }
+        .status-staged { background: #28a745; color: white; }
+        .status-committed { background: #17a2b8; color: white; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <span class="part-indicator">Part 2 of 7</span>
+        <h1>Git Daily Workflow</h1>
+
+        <p>This section covers the commands you'll use every single day. Master these, and you'll handle 90% of your Git interactions confidently.</p>
+
+        <h2>The Basic Workflow Cycle</h2>
+
+        <div class="workflow-diagram">
+            <p style="font-size: 18px; margin-bottom: 20px;"><strong>Edit → Stage → Commit → Push</strong></p>
+            <p>1. Make changes to files</p>
+            <p>↓</p>
+            <p>2. Stage changes you want to commit</p>
+            <p>↓</p>
+            <p>3. Commit staged changes (create snapshot)</p>
+            <p>↓</p>
+            <p>4. Push to remote (share with team)</p>
+        </div>
+
+        <h2>git status - Your Best Friend</h2>
+        <p><strong>Always run <code>git status</code> first.</strong> It tells you exactly what's happening in your repository.</p>
+
+        <pre>
+git status</pre>
+
+        <p>Sample output:</p>
+        <pre>
+On branch main
+Your branch is up to date with 'origin/main'.
+
+Changes not staged for commit:
+  (use "git add &lt;file&gt;..." to update what will be committed)
+        <span style="color: #ff6b6b;">modified:   src/app.js</span>
+
+Untracked files:
+  (use "git add &lt;file&gt;..." to include in what will be committed)
+        <span style="color: #ff6b6b;">src/utils.js</span>
+
+no changes added to commit (use "git add")</pre>
+
+        <h3>Understanding File States</h3>
+        <table>
+            <tr>
+                <th>State</th>
+                <th>Meaning</th>
+                <th>Color in status</th>
+            </tr>
+            <tr>
+                <td><span class="file-status status-untracked">Untracked</span></td>
+                <td>New file Git doesn't know about</td>
+                <td>Red</td>
+            </tr>
+            <tr>
+                <td><span class="file-status status-modified">Modified</span></td>
+                <td>Changed file, not yet staged</td>
+                <td>Red</td>
+            </tr>
+            <tr>
+                <td><span class="file-status status-staged">Staged</span></td>
+                <td>Ready to be committed</td>
+                <td>Green</td>
+            </tr>
+            <tr>
+                <td><span class="file-status status-committed">Committed</span></td>
+                <td>Safely stored in repository</td>
+                <td>Not shown (clean)</td>
+            </tr>
+        </table>
+
+        <div class="info-box">
+            <strong>Pro tip:</strong> Use <code>git status -s</code> for a shorter output:
+            <pre style="margin: 10px 0 0 0; padding: 10px;">
+ M src/app.js      # Modified, not staged
+M  src/index.js    # Modified and staged
+?? src/utils.js    # Untracked
+A  src/new.js      # New file, staged</pre>
+        </div>
+
+        <h2>git add - Staging Changes</h2>
+        <p>The <code>git add</code> command moves changes from your working directory to the staging area.</p>
+
+        <h3>Common Usage</h3>
+        <pre>
+# Add a specific file
+git add filename.js
+
+# Add multiple specific files
+git add file1.js file2.js file3.js
+
+# Add all files in a directory
+git add src/
+
+# Add all changed files (most common)
+git add .
+
+# Add all tracked files that were modified (ignores new files)
+git add -u</pre>
+
+        <h3>git add -p - Selective/Interactive Staging</h3>
+        <p>This is a powerful feature! It lets you stage only <em>parts</em> of a file.</p>
+
+        <pre>
+git add -p</pre>
+
+        <p>Git will show you each change (called a "hunk") and ask what to do:</p>
+        <pre>
+@@ -1,4 +1,5 @@
+ function greet() {
+-    console.log("Hello");
++    console.log("Hello, World!");
++    return true;
+ }
+
+<span style="color: #00ff88;">Stage this hunk [y,n,q,a,d,s,e,?]?</span></pre>
+
+        <table>
+            <tr>
+                <th>Option</th>
+                <th>Action</th>
+            </tr>
+            <tr><td><code>y</code></td><td>Yes, stage this hunk</td></tr>
+            <tr><td><code>n</code></td><td>No, don't stage this hunk</td></tr>
+            <tr><td><code>q</code></td><td>Quit (don't stage remaining hunks)</td></tr>
+            <tr><td><code>a</code></td><td>Stage this and all remaining hunks in the file</td></tr>
+            <tr><td><code>d</code></td><td>Don't stage this or any remaining hunks in the file</td></tr>
+            <tr><td><code>s</code></td><td>Split this hunk into smaller hunks</td></tr>
+            <tr><td><code>e</code></td><td>Manually edit this hunk</td></tr>
+        </table>
+
+        <div class="success-box">
+            <strong>Why use <code>git add -p</code>?</strong>
+            <ul>
+                <li>Keep commits focused on one logical change</li>
+                <li>Review your changes before committing</li>
+                <li>Avoid accidentally committing debug code</li>
+                <li>Separate unrelated changes into different commits</li>
+            </ul>
+        </div>
+
+        <h2>git commit - Creating Snapshots</h2>
+        <p>A commit saves your staged changes permanently in the repository.</p>
+
+        <pre>
+# Commit with a message (most common)
+git commit -m "Add user authentication feature"
+
+# Commit with a detailed message (opens editor)
+git commit
+
+# Stage all tracked files AND commit (skip git add for modified files)
+git commit -am "Fix login bug"</pre>
+
+        <div class="danger-box">
+            <strong>Warning:</strong> <code>git commit -am</code> only stages <em>modified tracked files</em>. New (untracked) files won't be included!
+        </div>
+
+        <h3>Writing Good Commit Messages</h3>
+        <p>A good commit message explains <strong>what</strong> changed and <strong>why</strong>.</p>
+
+        <div class="highlight-box">
+            <strong>The 50/72 Rule:</strong>
+            <ul>
+                <li>First line: 50 characters or less (summary)</li>
+                <li>Blank line</li>
+                <li>Body: Wrap at 72 characters (detailed explanation)</li>
+            </ul>
+        </div>
+
+        <pre>
+# Bad commit messages
+git commit -m "fix"
+git commit -m "update"
+git commit -m "asdfasdf"
+git commit -m "WIP"
+
+# Good commit messages
+git commit -m "Fix null pointer exception in user login"
+git commit -m "Add email validation to registration form"
+git commit -m "Refactor database connection for better performance"</pre>
+
+        <h3>Detailed Commit Message Example</h3>
+        <pre>
+git commit</pre>
+        <p>This opens your editor where you can write:</p>
+        <pre>
+Add password strength indicator to registration
+
+- Display strength meter below password field
+- Color-coded feedback (red/yellow/green)
+- Check for minimum length, numbers, and special characters
+- Show requirements list that updates as user types
+
+Closes #234</pre>
+
+        <h2>git pull - Getting Updates</h2>
+        <p><code>git pull</code> downloads changes from the remote repository and integrates them into your local branch.</p>
+
+        <pre>
+# Basic pull (fetch + merge)
+git pull
+
+# Pull with rebase (cleaner history)
+git pull --rebase
+
+# Pull from a specific remote and branch
+git pull origin main</pre>
+
+        <h3>git pull vs git pull --rebase</h3>
+
+        <table>
+            <tr>
+                <th>Command</th>
+                <th>What it does</th>
+                <th>Result</th>
+            </tr>
+            <tr>
+                <td><code>git pull</code></td>
+                <td>Fetch + Merge</td>
+                <td>Creates a merge commit if branches diverged</td>
+            </tr>
+            <tr>
+                <td><code>git pull --rebase</code></td>
+                <td>Fetch + Rebase</td>
+                <td>Replays your commits on top of remote (linear history)</td>
+            </tr>
+        </table>
+
+        <div class="info-box">
+            <strong>Recommendation:</strong> Use <code>git pull --rebase</code> for a cleaner, linear history. You can set it as default:
+            <pre style="margin: 10px 0 0 0;">git config --global pull.rebase true</pre>
+        </div>
+
+        <h2>git push - Sharing Your Work</h2>
+        <p><code>git push</code> uploads your local commits to the remote repository.</p>
+
+        <pre>
+# Push to the tracked remote branch
+git push
+
+# Push to a specific remote and branch
+git push origin main
+
+# Push a new branch and set up tracking
+git push -u origin feature/new-login
+
+# Push all branches
+git push --all</pre>
+
+        <div class="danger-box">
+            <strong>Never use <code>git push --force</code> on shared branches!</strong> It rewrites history and can cause teammates to lose work. If you must force push, use <code>git push --force-with-lease</code> which is safer.
+        </div>
+
+        <h2>.gitignore - Excluding Files</h2>
+        <p>The <code>.gitignore</code> file tells Git which files to ignore (not track).</p>
+
+        <h3>Common .gitignore patterns</h3>
+        <pre>
+# Dependencies
+node_modules/
+vendor/
+__pycache__/
+
+# Build outputs
+dist/
+build/
+*.exe
+*.dll
+
+# IDE and editor files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Environment and secrets
+.env
+.env.local
+*.pem
+credentials.json
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+*.tmp
+*.temp</pre>
+
+        <div class="highlight-box">
+            <strong>Tip:</strong> Use <a href="https://gitignore.io" target="_blank">gitignore.io</a> to generate .gitignore files for your specific tech stack.
+        </div>
+
+        <h3>Ignoring Already Tracked Files</h3>
+        <p>If you've already committed a file and want to ignore it:</p>
+        <pre>
+# Remove from Git but keep on disk
+git rm --cached filename.txt
+
+# Then add to .gitignore and commit</pre>
+
+        <h2>Complete Daily Workflow Example</h2>
+
+        <div class="command-box">
+            <span class="comment"># Start your day: get latest changes</span><br>
+            git pull --rebase<br><br>
+
+            <span class="comment"># Check current state</span><br>
+            git status<br><br>
+
+            <span class="comment"># Make your changes to files...</span><br>
+            <span class="comment"># (edit code in your editor)</span><br><br>
+
+            <span class="comment"># See what you changed</span><br>
+            git status<br>
+            git diff<br><br>
+
+            <span class="comment"># Stage changes (selectively or all)</span><br>
+            git add -p<br>
+            <span class="comment"># or: git add .</span><br><br>
+
+            <span class="comment"># Commit with a clear message</span><br>
+            git commit -m "Add email validation to signup form"<br><br>
+
+            <span class="comment"># Push to remote</span><br>
+            git push<br><br>
+
+            <span class="comment"># If push is rejected (someone pushed first):</span><br>
+            git pull --rebase<br>
+            git push
+        </div>
+
+        <h2>Quick Reference</h2>
+        <table>
+            <tr>
+                <th>Command</th>
+                <th>Purpose</th>
+            </tr>
+            <tr>
+                <td><code>git status</code></td>
+                <td>See current state of files</td>
+            </tr>
+            <tr>
+                <td><code>git add &lt;file&gt;</code></td>
+                <td>Stage specific file</td>
+            </tr>
+            <tr>
+                <td><code>git add .</code></td>
+                <td>Stage all changes</td>
+            </tr>
+            <tr>
+                <td><code>git add -p</code></td>
+                <td>Interactive staging</td>
+            </tr>
+            <tr>
+                <td><code>git commit -m "msg"</code></td>
+                <td>Commit with message</td>
+            </tr>
+            <tr>
+                <td><code>git pull --rebase</code></td>
+                <td>Get remote changes cleanly</td>
+            </tr>
+            <tr>
+                <td><code>git push</code></td>
+                <td>Share commits to remote</td>
+            </tr>
+            <tr>
+                <td><code>git diff</code></td>
+                <td>See unstaged changes</td>
+            </tr>
+            <tr>
+                <td><code>git diff --staged</code></td>
+                <td>See staged changes</td>
+            </tr>
+        </table>
+
+        <h2>Key Takeaways</h2>
+        <div class="success-box">
+            <ol>
+                <li><strong>Always check status first:</strong> <code>git status</code> before and after operations</li>
+                <li><strong>Stage intentionally:</strong> Use <code>git add -p</code> for precise control</li>
+                <li><strong>Write meaningful commits:</strong> Future you will thank present you</li>
+                <li><strong>Pull before push:</strong> Always sync with remote before pushing</li>
+                <li><strong>Use .gitignore:</strong> Keep secrets and junk out of your repository</li>
+            </ol>
+        </div>
+
+        <div class="nav-links">
+            <a href="01-git-introduction-mental-model.html">← Part 1: Introduction</a>
+            <a href="03-git-branching-merging.html">Part 3: Branching →</a>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learn Git - Complete Guide</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            color: #333;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 50px;
+            color: white;
+        }
+        h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #e44d26 0%, #f39c12 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .tagline {
+            font-size: 1.3em;
+            color: #a0a0a0;
+            margin-bottom: 30px;
+        }
+        .intro {
+            background: rgba(255,255,255,0.1);
+            padding: 25px;
+            border-radius: 15px;
+            color: #ddd;
+            margin-bottom: 40px;
+        }
+        .parts-grid {
+            display: grid;
+            gap: 20px;
+        }
+        .part-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            text-decoration: none;
+            color: #333;
+            transition: all 0.3s ease;
+            display: block;
+            border-left: 5px solid #e44d26;
+        }
+        .part-card:hover {
+            transform: translateX(10px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        .part-card h2 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .part-number {
+            background: #e44d26;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+        .part-card p {
+            color: #666;
+            margin-left: 55px;
+        }
+        .part-card ul {
+            margin: 10px 0 0 55px;
+            color: #888;
+            font-size: 0.9em;
+        }
+        .part-card li {
+            margin-bottom: 5px;
+        }
+        .special-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-left: 5px solid #f39c12;
+        }
+        .special-card h2 {
+            color: white;
+        }
+        .special-card p {
+            color: rgba(255,255,255,0.9);
+        }
+        .special-card ul {
+            color: rgba(255,255,255,0.8);
+        }
+        .quick-start {
+            background: rgba(255,255,255,0.05);
+            border: 2px solid rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 40px;
+            color: white;
+        }
+        .quick-start h3 {
+            color: #f39c12;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+        .command-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        .command-item {
+            background: rgba(0,0,0,0.3);
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Consolas', monospace;
+        }
+        .command-item code {
+            color: #00ff88;
+            display: block;
+            margin-bottom: 5px;
+        }
+        .command-item span {
+            color: #888;
+            font-size: 0.85em;
+            font-family: 'Segoe UI', sans-serif;
+        }
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            color: #666;
+            padding: 20px;
+        }
+        .progress-tip {
+            background: rgba(46, 204, 113, 0.2);
+            border: 1px solid #2ecc71;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 30px;
+            color: #a0d9b4;
+        }
+        .progress-tip h4 {
+            color: #2ecc71;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Learn Git</h1>
+            <p class="tagline">A Complete Guide for Beginners</p>
+        </header>
+
+        <div class="intro">
+            <p>Welcome! This guide covers the 20% of Git that you'll use 80% of the time. Each part builds on the previous one, but you can also jump to any section you need. Start with Part 1 if you're new, or use the Feynman Revision document to test your understanding.</p>
+        </div>
+
+        <div class="parts-grid">
+            <a href="01-git-introduction-mental-model.html" class="part-card">
+                <h2><span class="part-number">1</span> Introduction & Mental Model</h2>
+                <p>Understand what Git is and why it exists</p>
+                <ul>
+                    <li>What is version control?</li>
+                    <li>The three trees: working dir, staging, repository</li>
+                    <li>Commits as snapshots</li>
+                    <li>Branches as pointers</li>
+                    <li>HEAD - where you are now</li>
+                    <li>Installing and configuring Git</li>
+                </ul>
+            </a>
+
+            <a href="02-git-daily-workflow.html" class="part-card">
+                <h2><span class="part-number">2</span> Daily Workflow</h2>
+                <p>Commands you'll use every single day</p>
+                <ul>
+                    <li>git status - know your state</li>
+                    <li>git add - staging changes</li>
+                    <li>git add -p - selective staging</li>
+                    <li>git commit - creating snapshots</li>
+                    <li>git pull / git push - syncing</li>
+                    <li>.gitignore - excluding files</li>
+                </ul>
+            </a>
+
+            <a href="03-git-branching-merging.html" class="part-card">
+                <h2><span class="part-number">3</span> Branching & Merging</h2>
+                <p>Work on features without breaking things</p>
+                <ul>
+                    <li>Creating and switching branches</li>
+                    <li>git switch vs git checkout</li>
+                    <li>Merging branches</li>
+                    <li>Rebasing - cleaner history</li>
+                    <li>Cherry-pick - selective commits</li>
+                    <li>Handling merge conflicts</li>
+                </ul>
+            </a>
+
+            <a href="04-git-recovery-undo.html" class="part-card">
+                <h2><span class="part-number">4</span> Recovery & Undo</h2>
+                <p>Fix mistakes and recover from disasters</p>
+                <ul>
+                    <li>git restore - discard changes</li>
+                    <li>git stash - save work temporarily</li>
+                    <li>git reset - undo commits</li>
+                    <li>git revert - safe undo for shared history</li>
+                    <li>git reflog - find "lost" work</li>
+                    <li>Common recovery scenarios</li>
+                </ul>
+            </a>
+
+            <a href="05-git-investigation-history.html" class="part-card">
+                <h2><span class="part-number">5</span> Investigation & History</h2>
+                <p>Explore and understand your codebase</p>
+                <ul>
+                    <li>git log - exploring history</li>
+                    <li>git diff - comparing changes</li>
+                    <li>git blame - line authorship</li>
+                    <li>git show - inspecting commits</li>
+                    <li>git bisect - finding bug sources</li>
+                    <li>Filtering and searching commits</li>
+                </ul>
+            </a>
+
+            <a href="06-git-collaboration-remotes.html" class="part-card">
+                <h2><span class="part-number">6</span> Collaboration & Remotes</h2>
+                <p>Work with teams and remote repositories</p>
+                <ul>
+                    <li>Understanding remotes</li>
+                    <li>git fetch vs git pull</li>
+                    <li>git push - sharing work</li>
+                    <li>Tracking branches</li>
+                    <li>Working with forks</li>
+                    <li>Team workflows</li>
+                </ul>
+            </a>
+
+            <a href="07-git-pr-code-review.html" class="part-card">
+                <h2><span class="part-number">7</span> PR & Code Review</h2>
+                <p>Collaborate effectively through pull requests</p>
+                <ul>
+                    <li>Creating good pull requests</li>
+                    <li>Writing clear descriptions</li>
+                    <li>Reviewing others' code</li>
+                    <li>Giving effective feedback</li>
+                    <li>CI/CD integration</li>
+                    <li>Merge strategies</li>
+                </ul>
+            </a>
+
+            <a href="08-git-feynman-revision.html" class="part-card special-card">
+                <h2><span class="part-number" style="background: #f39c12;">R</span> Feynman Revision</h2>
+                <p>Understand Git deeply through simple analogies</p>
+                <ul>
+                    <li>ELI5 explanations for every concept</li>
+                    <li>Memorable analogies</li>
+                    <li>Quick mental models</li>
+                    <li>Test your understanding</li>
+                    <li>The 5 commands that cover 90%</li>
+                </ul>
+            </a>
+        </div>
+
+        <div class="quick-start">
+            <h3>Quick Command Reference</h3>
+            <div class="command-grid">
+                <div class="command-item">
+                    <code>git status</code>
+                    <span>Check current state</span>
+                </div>
+                <div class="command-item">
+                    <code>git add .</code>
+                    <span>Stage all changes</span>
+                </div>
+                <div class="command-item">
+                    <code>git commit -m "msg"</code>
+                    <span>Save snapshot</span>
+                </div>
+                <div class="command-item">
+                    <code>git pull --rebase</code>
+                    <span>Get team changes</span>
+                </div>
+                <div class="command-item">
+                    <code>git push</code>
+                    <span>Share your work</span>
+                </div>
+                <div class="command-item">
+                    <code>git switch -c branch</code>
+                    <span>Create new branch</span>
+                </div>
+                <div class="command-item">
+                    <code>git log --oneline</code>
+                    <span>View history</span>
+                </div>
+                <div class="command-item">
+                    <code>git stash</code>
+                    <span>Save work temporarily</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="progress-tip">
+            <h4>Learning Tip</h4>
+            <p>Don't try to memorize everything at once. Start with Parts 1-2, practice for a few days, then move on. The Feynman Revision document is great for checking if you truly understand the concepts - if you can explain them simply, you've got it!</p>
+        </div>
+
+        <footer>
+            <p>Happy Learning! Remember: Git is just a tool to save snapshots and share them.</p>
+        </footer>
+    </div>
+</body>
+</html>

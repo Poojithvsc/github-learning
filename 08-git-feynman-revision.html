@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Git - Feynman Style Revision</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Georgia', serif;
+            line-height: 2;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            background: white;
+            padding: 50px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+        .subtitle {
+            text-align: center;
+            color: #7f8c8d;
+            font-style: italic;
+            margin-bottom: 40px;
+            font-size: 1.1em;
+        }
+        h2 {
+            color: #e74c3c;
+            margin-top: 50px;
+            margin-bottom: 20px;
+            font-size: 1.6em;
+            border-bottom: 2px solid #e74c3c;
+            padding-bottom: 10px;
+        }
+        h3 {
+            color: #3498db;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+        p {
+            margin-bottom: 20px;
+            font-size: 1.1em;
+        }
+        .analogy {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+            font-size: 1.1em;
+        }
+        .analogy-title {
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+        .simple-box {
+            background: #ffeaa7;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 5px solid #fdcb6e;
+        }
+        .command-card {
+            background: #2d3436;
+            color: #00cec9;
+            padding: 15px 20px;
+            border-radius: 8px;
+            font-family: 'Consolas', monospace;
+            margin: 15px 0;
+            font-size: 1.1em;
+        }
+        .eli5 {
+            background: linear-gradient(135deg, #a29bfe 0%, #6c5ce7 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+        }
+        .eli5 h4 {
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+        .quick-card {
+            background: #f8f9fa;
+            border: 2px solid #dee2e6;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        .quick-card h4 {
+            color: #495057;
+            margin-bottom: 15px;
+        }
+        .flow-diagram {
+            text-align: center;
+            font-family: 'Consolas', monospace;
+            background: #f1f2f6;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-size: 1.1em;
+        }
+        ul {
+            margin: 15px 0 15px 25px;
+        }
+        li {
+            margin-bottom: 10px;
+        }
+        .nav-links {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 50px;
+            padding-top: 30px;
+            border-top: 2px solid #eee;
+        }
+        .nav-links a {
+            background: #e74c3c;
+            color: white;
+            padding: 12px 25px;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s;
+            font-family: 'Segoe UI', sans-serif;
+        }
+        .nav-links a:hover {
+            background: #c0392b;
+            transform: translateY(-2px);
+        }
+        .memory-palace {
+            background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+        }
+        .remember-this {
+            background: #00b894;
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-weight: bold;
+        }
+        .test-yourself {
+            background: #fdcb6e;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 30px 0;
+        }
+        .test-yourself h4 {
+            color: #2d3436;
+            margin-bottom: 15px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background: #3498db;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Git - The Feynman Way</h1>
+        <p class="subtitle">"If you can't explain it simply, you don't understand it well enough."</p>
+
+        <p>This document explains Git using the Feynman Technique: simple words, clear analogies, and zero jargon. Read this when you want to truly understand Git, not just memorize commands.</p>
+
+        <h2>What is Git, Really?</h2>
+
+        <div class="eli5">
+            <h4>Explain Like I'm 5:</h4>
+            <p>Imagine you're writing a story. Every time you finish a chapter, you make a photocopy and put it in a folder. Now you can always go back to any chapter if you mess up. Git does this automatically for your code.</p>
+        </div>
+
+        <p>Git is a tool that takes <strong>snapshots</strong> of your project every time you tell it to. Each snapshot is called a <strong>commit</strong>. You can go back to any snapshot at any time.</p>
+
+        <div class="analogy">
+            <div class="analogy-title">The Video Game Analogy</div>
+            <p>Git is like save points in a video game. Every time you complete something important, you save. If you die (mess up your code), you load your last save. Git lets you have unlimited saves and jump to any of them.</p>
+        </div>
+
+        <h2>The Three Boxes</h2>
+
+        <p>Git has three "boxes" where your files can be:</p>
+
+        <div class="flow-diagram">
+            <strong>Working Directory</strong> → <strong>Staging Area</strong> → <strong>Repository</strong><br><br>
+            (Your desk) → (Outbox) → (Filing cabinet)
+        </div>
+
+        <div class="analogy">
+            <div class="analogy-title">The Office Analogy</div>
+            <p><strong>Working Directory:</strong> Your desk where you're actively working on papers.</p>
+            <p><strong>Staging Area:</strong> Your outbox - papers you've finished and want to file.</p>
+            <p><strong>Repository:</strong> The filing cabinet - permanently stored, organized records.</p>
+        </div>
+
+        <div class="simple-box">
+            <strong>In Simple Terms:</strong><br>
+            1. You edit files (working directory)<br>
+            2. You choose which edits to save: <code>git add</code> (staging)<br>
+            3. You save them permanently: <code>git commit</code> (repository)
+        </div>
+
+        <h2>Commits = Snapshots</h2>
+
+        <div class="eli5">
+            <h4>Explain Like I'm 5:</h4>
+            <p>A commit is like taking a photo of your entire Lego creation. The photo remembers exactly how every piece was arranged at that moment. You can take hundreds of photos as you build, and look back at any of them.</p>
+        </div>
+
+        <p>Each commit contains:</p>
+        <ul>
+            <li>A snapshot of ALL your files at that moment</li>
+            <li>A unique ID (like a fingerprint)</li>
+            <li>Who made it and when</li>
+            <li>A message explaining what changed</li>
+            <li>A pointer to the previous commit (its parent)</li>
+        </ul>
+
+        <div class="remember-this">
+            Key Insight: Commits are SNAPSHOTS, not differences. Git doesn't store "what changed" - it stores "what everything looks like right now."
+        </div>
+
+        <h2>Branches = Parallel Universes</h2>
+
+        <div class="analogy">
+            <div class="analogy-title">The Multiverse Analogy</div>
+            <p>Imagine you're at a crossroads in life. In one universe, you take the left path. In another, you take the right. Both versions of you continue living, making different choices.</p>
+            <p>Git branches are like parallel universes for your code. You can work on a new feature in one universe while keeping your main code safe in another. Later, you can merge the universes together.</p>
+        </div>
+
+        <div class="simple-box">
+            <strong>What a branch actually is:</strong><br>
+            A branch is just a sticky note pointing to a commit. That's it! When you make new commits, the sticky note moves forward. Creating a branch just creates a new sticky note.
+        </div>
+
+        <div class="command-card">
+            git switch -c new-feature  # Create new universe<br>
+            git switch main            # Jump back to main universe
+        </div>
+
+        <h2>HEAD = "You Are Here"</h2>
+
+        <div class="eli5">
+            <h4>Explain Like I'm 5:</h4>
+            <p>You know those maps at the mall with "You Are Here" arrows? HEAD is Git's way of showing "You Are Here" - which branch you're on and which commit you're looking at.</p>
+        </div>
+
+        <h2>The Daily Workflow - Super Simple</h2>
+
+        <div class="quick-card">
+            <h4>Every Day, Every Project:</h4>
+            <div class="command-card">
+                git status        # Where am I? What changed?<br>
+                git add .         # Stage all changes<br>
+                git commit -m "What I did"  # Save snapshot<br>
+                git push          # Share with team
+            </div>
+        </div>
+
+        <div class="analogy">
+            <div class="analogy-title">The Restaurant Analogy</div>
+            <p><strong>git status</strong> = Looking at your order pad</p>
+            <p><strong>git add</strong> = Writing down what the customer wants</p>
+            <p><strong>git commit</strong> = Sending the order to the kitchen</p>
+            <p><strong>git push</strong> = Serving the food to the customer</p>
+        </div>
+
+        <h2>Merging = Combining Universes</h2>
+
+        <div class="eli5">
+            <h4>Explain Like I'm 5:</h4>
+            <p>You and your friend both drew parts of a picture. Now you want to combine them into one picture. If you drew different parts, it's easy - just put them together. But if you both colored the same spot differently, you have to decide whose color to keep. That decision is a "merge conflict."</p>
+        </div>
+
+        <div class="simple-box">
+            <strong>Merging:</strong> Combining two branches into one.<br>
+            <strong>Conflict:</strong> When both branches changed the same line - Git needs your help to decide which version to keep.
+        </div>
+
+        <h2>Remote = The Cloud Copy</h2>
+
+        <div class="analogy">
+            <div class="analogy-title">The Google Docs Analogy</div>
+            <p>Your local repository is like a Word document on your computer. The remote (GitHub) is like Google Docs - it's in the cloud, and your whole team can access it.</p>
+            <p><strong>git push</strong> = Uploading your document to Google Docs</p>
+            <p><strong>git pull</strong> = Downloading the latest version from Google Docs</p>
+            <p><strong>git fetch</strong> = Checking if there are new versions (without downloading yet)</p>
+        </div>
+
+        <h2>Undo Anything - Git is Forgiving</h2>
+
+        <div class="memory-palace">
+            <h4>The Undo Cheat Sheet (memorize this!)</h4>
+            <p><strong>Oops, I want to discard my uncommitted changes:</strong><br>
+            → <code>git restore filename</code></p>
+
+            <p><strong>Oops, I staged something I didn't want to:</strong><br>
+            → <code>git restore --staged filename</code></p>
+
+            <p><strong>Oops, I committed but want to undo (locally):</strong><br>
+            → <code>git reset --soft HEAD~1</code> (keeps changes staged)<br>
+            → <code>git reset HEAD~1</code> (keeps changes unstaged)<br>
+            → <code>git reset --hard HEAD~1</code> (discards everything)</p>
+
+            <p><strong>Oops, I pushed something bad:</strong><br>
+            → <code>git revert &lt;commit&gt;</code> (creates an "undo" commit - safe)</p>
+
+            <p><strong>Oops, I really messed up and can't find my work:</strong><br>
+            → <code>git reflog</code> (shows everything that happened - your time machine)</p>
+        </div>
+
+        <div class="remember-this">
+            Golden Rule: If it's committed, it's almost never lost. Use <code>git reflog</code> to find it.
+        </div>
+
+        <h2>Quick Mental Models</h2>
+
+        <table>
+            <tr>
+                <th>Git Concept</th>
+                <th>Think of it as...</th>
+            </tr>
+            <tr>
+                <td>Repository</td>
+                <td>A project folder with superpowers (time travel)</td>
+            </tr>
+            <tr>
+                <td>Commit</td>
+                <td>A save point / snapshot / photograph</td>
+            </tr>
+            <tr>
+                <td>Branch</td>
+                <td>A parallel universe / timeline / sticky note</td>
+            </tr>
+            <tr>
+                <td>HEAD</td>
+                <td>"You are here" marker</td>
+            </tr>
+            <tr>
+                <td>Merge</td>
+                <td>Combining two timelines</td>
+            </tr>
+            <tr>
+                <td>Remote</td>
+                <td>Cloud backup that your team shares</td>
+            </tr>
+            <tr>
+                <td>Clone</td>
+                <td>Downloading a complete copy</td>
+            </tr>
+            <tr>
+                <td>Push</td>
+                <td>Uploading your changes</td>
+            </tr>
+            <tr>
+                <td>Pull</td>
+                <td>Downloading others' changes</td>
+            </tr>
+            <tr>
+                <td>Staging</td>
+                <td>Selecting what goes in the next photo</td>
+            </tr>
+            <tr>
+                <td>Stash</td>
+                <td>Hiding your work in a drawer temporarily</td>
+            </tr>
+        </table>
+
+        <h2>The 5 Commands That Cover 90% of Git</h2>
+
+        <div class="simple-box">
+            <ol>
+                <li><strong>git status</strong> - What's going on?</li>
+                <li><strong>git add</strong> - I want to save these changes</li>
+                <li><strong>git commit</strong> - Take the snapshot</li>
+                <li><strong>git pull</strong> - Get team's changes</li>
+                <li><strong>git push</strong> - Share my changes</li>
+            </ol>
+        </div>
+
+        <h2>Test Your Understanding</h2>
+
+        <div class="test-yourself">
+            <h4>Can you explain these to a friend?</h4>
+            <ol>
+                <li>What's the difference between the working directory and the staging area?</li>
+                <li>Why are commits called "snapshots" instead of "changes"?</li>
+                <li>What actually IS a branch? (Hint: it's simpler than you think)</li>
+                <li>When would you use <code>git reset</code> vs <code>git revert</code>?</li>
+                <li>What does <code>git fetch</code> do that <code>git pull</code> doesn't?</li>
+                <li>Why does Git have a staging area at all? Why not just commit directly?</li>
+            </ol>
+            <p style="margin-top: 20px;"><em>If you can explain each of these simply, you truly understand Git!</em></p>
+        </div>
+
+        <h2>One Last Analogy: The Complete Picture</h2>
+
+        <div class="analogy">
+            <div class="analogy-title">Git is a Photo Album for Your Code</div>
+            <p><strong>Repository:</strong> Your photo album</p>
+            <p><strong>Commits:</strong> Individual photographs</p>
+            <p><strong>Branches:</strong> Different sections of the album (vacations, birthdays, etc.)</p>
+            <p><strong>HEAD:</strong> The page you're currently looking at</p>
+            <p><strong>Staging:</strong> Choosing which photos to put on the next page</p>
+            <p><strong>Remote:</strong> A backup copy of your album in the cloud</p>
+            <p><strong>Push/Pull:</strong> Syncing your album with the cloud copy</p>
+            <p><strong>Merge:</strong> Combining two sections into one</p>
+            <p><strong>Conflict:</strong> Two photos in the same spot - you pick which one</p>
+            <p><strong>Reflog:</strong> An index showing every page you've ever looked at</p>
+        </div>
+
+        <div class="remember-this" style="text-align: center; font-size: 1.2em;">
+            Remember: Git's job is simple - save snapshots of your work and let you travel back to any of them. Everything else is just a convenience built on top of that.
+        </div>
+
+        <div class="nav-links">
+            <a href="07-git-pr-code-review.html">← Part 7: PR & Code Review</a>
+            <a href="00-git-index.html">Back to Index →</a>
+        </div>
+    </div>
+</body>
+</html>

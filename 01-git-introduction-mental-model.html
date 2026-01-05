@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Part 1: Git Introduction & Mental Model</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            color: #333;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #e44d26;
+            border-bottom: 3px solid #e44d26;
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+        }
+        h2 {
+            color: #2c3e50;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            border-left: 4px solid #e44d26;
+            padding-left: 15px;
+        }
+        h3 {
+            color: #34495e;
+            margin-top: 25px;
+            margin-bottom: 15px;
+        }
+        p {
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+        .highlight-box {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        .info-box {
+            background: #d1ecf1;
+            border-left: 4px solid #17a2b8;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        .danger-box {
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        .success-box {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        code {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: 'Consolas', 'Monaco', monospace;
+        }
+        pre {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 20px 0;
+            font-family: 'Consolas', 'Monaco', monospace;
+        }
+        .diagram {
+            background: #f8f9fa;
+            border: 2px dashed #dee2e6;
+            padding: 30px;
+            margin: 25px 0;
+            border-radius: 8px;
+            text-align: center;
+            font-family: 'Consolas', monospace;
+        }
+        .diagram-flow {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .diagram-box {
+            background: #3498db;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+        .diagram-arrow {
+            font-size: 24px;
+            color: #7f8c8d;
+        }
+        ul, ol {
+            margin: 15px 0 15px 30px;
+        }
+        li {
+            margin-bottom: 10px;
+        }
+        .nav-links {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 2px solid #eee;
+        }
+        .nav-links a {
+            background: #e44d26;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+        .nav-links a:hover {
+            background: #c0392b;
+        }
+        .analogy {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 25px 0;
+        }
+        .analogy h4 {
+            margin-bottom: 10px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background: #3498db;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+        .part-indicator {
+            background: #e44d26;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <span class="part-indicator">Part 1 of 7</span>
+        <h1>Git Introduction & Mental Model</h1>
+
+        <h2>What is Git?</h2>
+        <p>Git is a <strong>distributed version control system</strong> (DVCS) created by Linus Torvalds in 2005. It was built to manage the Linux kernel development after the team lost access to their previous version control tool.</p>
+
+        <div class="info-box">
+            <strong>Version Control</strong> is a system that records changes to files over time so you can recall specific versions later. Think of it as an "unlimited undo" button for your entire project.
+        </div>
+
+        <h3>Why Do We Need Version Control?</h3>
+        <p>Without version control, developers often end up with:</p>
+        <ul>
+            <li><code>project_final.zip</code></li>
+            <li><code>project_final_v2.zip</code></li>
+            <li><code>project_final_ACTUAL_final.zip</code></li>
+            <li><code>project_final_USE_THIS_ONE.zip</code></li>
+        </ul>
+        <p>This chaos leads to lost work, confusion about which version is correct, and no way to see what changed between versions.</p>
+
+        <h3>Why Git Specifically?</h3>
+        <table>
+            <tr>
+                <th>Feature</th>
+                <th>Benefit</th>
+            </tr>
+            <tr>
+                <td><strong>Distributed</strong></td>
+                <td>Every developer has a full copy of the repository. No single point of failure.</td>
+            </tr>
+            <tr>
+                <td><strong>Fast</strong></td>
+                <td>Almost all operations are local, making them incredibly fast.</td>
+            </tr>
+            <tr>
+                <td><strong>Branching</strong></td>
+                <td>Create branches in seconds. Experiment without fear.</td>
+            </tr>
+            <tr>
+                <td><strong>Integrity</strong></td>
+                <td>Every file and commit is checksummed. Data corruption is immediately detected.</td>
+            </tr>
+            <tr>
+                <td><strong>Free & Open Source</strong></td>
+                <td>No licensing costs. Huge community support.</td>
+            </tr>
+        </table>
+
+        <h2>The Mental Model: Three Trees</h2>
+        <p>The most important concept to understand in Git is the <strong>"Three Trees"</strong> model. Git manages your files in three distinct areas:</p>
+
+        <div class="diagram">
+            <div class="diagram-flow">
+                <div class="diagram-box" style="background: #e74c3c;">Working Directory</div>
+                <span class="diagram-arrow">→</span>
+                <div class="diagram-box" style="background: #f39c12;">Staging Area</div>
+                <span class="diagram-arrow">→</span>
+                <div class="diagram-box" style="background: #27ae60;">Local Repository</div>
+                <span class="diagram-arrow">→</span>
+                <div class="diagram-box" style="background: #3498db;">Remote Repository</div>
+            </div>
+        </div>
+
+        <h3>1. Working Directory (Working Tree)</h3>
+        <p>This is simply the folder on your computer where your project files live. It's what you see in your file explorer. When you edit files, you're changing the working directory.</p>
+        <div class="highlight-box">
+            <strong>Think of it as:</strong> Your actual desk where you're actively working on papers.
+        </div>
+
+        <h3>2. Staging Area (Index)</h3>
+        <p>The staging area is like a preparation zone. Before you save changes permanently (commit), you first "stage" them. This lets you carefully select which changes to include in your next commit.</p>
+        <div class="highlight-box">
+            <strong>Think of it as:</strong> A box where you put papers you've finished and want to file away.
+        </div>
+
+        <h3>3. Local Repository (.git folder)</h3>
+        <p>When you commit, your staged changes are saved permanently in your local repository. This is stored in a hidden <code>.git</code> folder in your project directory. It contains all your commits (history).</p>
+        <div class="highlight-box">
+            <strong>Think of it as:</strong> Your personal filing cabinet where documents are stored permanently.
+        </div>
+
+        <h3>4. Remote Repository (GitHub, GitLab, etc.)</h3>
+        <p>This is a copy of your repository hosted on a server (like GitHub). It allows you to share code with others and serves as a backup.</p>
+        <div class="highlight-box">
+            <strong>Think of it as:</strong> A shared office filing cabinet that everyone on the team can access.
+        </div>
+
+        <div class="analogy">
+            <h4>Complete Analogy: Writing a Book</h4>
+            <p><strong>Working Directory:</strong> Your writing desk where you draft chapters.</p>
+            <p><strong>Staging Area:</strong> A "ready to publish" pile of completed chapters.</p>
+            <p><strong>Local Repository:</strong> Your personal bookshelf with all published editions.</p>
+            <p><strong>Remote Repository:</strong> The library where copies are available to everyone.</p>
+        </div>
+
+        <h2>Commits: Snapshots, Not Differences</h2>
+        <p>Here's a crucial insight: <strong>Git stores snapshots, not differences</strong>.</p>
+
+        <p>Some version control systems store changes (deltas) - "line 5 was modified, line 10 was added." Git instead takes a complete picture of all your files at each commit.</p>
+
+        <div class="info-box">
+            <strong>Why snapshots?</strong> This makes Git incredibly fast at switching between versions. Instead of applying hundreds of small changes, Git simply restores the complete snapshot.
+        </div>
+
+        <h3>What is a Commit?</h3>
+        <p>A commit is:</p>
+        <ul>
+            <li>A snapshot of all tracked files at a specific point in time</li>
+            <li>A unique ID (SHA-1 hash) like <code>a1b2c3d4...</code></li>
+            <li>Metadata: author, date, message</li>
+            <li>A pointer to its parent commit(s)</li>
+        </ul>
+
+        <pre>
+commit a1b2c3d4e5f6g7h8i9j0...
+Author: Your Name &lt;you@example.com&gt;
+Date:   Sun Jan 4 10:30:00 2026
+
+    Add user login functionality
+
+    - Created login form
+    - Added authentication logic
+    - Connected to database</pre>
+
+        <h2>Branches: Just Pointers</h2>
+        <p>A branch in Git is simply a <strong>lightweight movable pointer</strong> to a commit. That's it!</p>
+
+        <div class="diagram">
+            <pre style="background: transparent; color: #333; text-align: left; display: inline-block;">
+    * commit C (main, HEAD)
+    |
+    * commit B
+    |
+    * commit A (initial commit)
+            </pre>
+        </div>
+
+        <p>When you create a new branch, Git creates a new pointer. When you make a commit on that branch, the pointer moves forward.</p>
+
+        <div class="success-box">
+            <strong>Why branches are powerful:</strong>
+            <ul>
+                <li>Creating a branch takes milliseconds (just creating a 40-byte file)</li>
+                <li>You can experiment freely without affecting others</li>
+                <li>Multiple people can work on different features simultaneously</li>
+            </ul>
+        </div>
+
+        <h3>Common Branch Names</h3>
+        <table>
+            <tr>
+                <th>Branch</th>
+                <th>Purpose</th>
+            </tr>
+            <tr>
+                <td><code>main</code> or <code>master</code></td>
+                <td>The primary branch, usually representing production code</td>
+            </tr>
+            <tr>
+                <td><code>develop</code></td>
+                <td>Integration branch for features (in some workflows)</td>
+            </tr>
+            <tr>
+                <td><code>feature/xyz</code></td>
+                <td>Branch for developing a new feature</td>
+            </tr>
+            <tr>
+                <td><code>bugfix/xyz</code></td>
+                <td>Branch for fixing a bug</td>
+            </tr>
+            <tr>
+                <td><code>hotfix/xyz</code></td>
+                <td>Urgent fix for production</td>
+            </tr>
+        </table>
+
+        <h2>HEAD: Where You Are Now</h2>
+        <p><code>HEAD</code> is a special pointer that tells Git which branch (or commit) you're currently on.</p>
+
+        <div class="diagram">
+            <pre style="background: transparent; color: #333; text-align: left; display: inline-block;">
+                HEAD
+                  ↓
+    main ──→ * commit C
+             |
+             * commit B
+             |
+             * commit A
+            </pre>
+        </div>
+
+        <p>When you switch branches, HEAD moves to point to the new branch. When you commit, HEAD (and the current branch) move to the new commit.</p>
+
+        <div class="danger-box">
+            <strong>Detached HEAD:</strong> If you checkout a specific commit instead of a branch, HEAD points directly to that commit. This is called a "detached HEAD state." Any commits you make won't belong to any branch and can be lost!
+        </div>
+
+        <h2>Installing and Configuring Git</h2>
+
+        <h3>Installation</h3>
+        <ul>
+            <li><strong>Windows:</strong> Download from <a href="https://git-scm.com">git-scm.com</a> or use <code>winget install Git.Git</code></li>
+            <li><strong>macOS:</strong> <code>brew install git</code> or install Xcode Command Line Tools</li>
+            <li><strong>Linux:</strong> <code>apt install git</code> or <code>yum install git</code></li>
+        </ul>
+
+        <h3>First-Time Configuration</h3>
+        <pre>
+# Set your identity (required for commits)
+git config --global user.name "Your Name"
+git config --global user.email "you@example.com"
+
+# Set default branch name
+git config --global init.defaultBranch main
+
+# Set your preferred editor
+git config --global core.editor "code --wait"  # VS Code
+git config --global core.editor "notepad"       # Notepad (Windows)
+
+# Check your configuration
+git config --list</pre>
+
+        <div class="info-box">
+            <strong>--global vs --local:</strong>
+            <ul>
+                <li><code>--global</code>: Applies to all repositories on your computer</li>
+                <li><code>--local</code> (default): Applies only to the current repository</li>
+            </ul>
+        </div>
+
+        <h2>Creating Your First Repository</h2>
+
+        <h3>Option 1: Initialize a new repository</h3>
+        <pre>
+# Navigate to your project folder
+cd my-project
+
+# Initialize Git
+git init
+
+# You'll see: Initialized empty Git repository in /path/to/my-project/.git/</pre>
+
+        <h3>Option 2: Clone an existing repository</h3>
+        <pre>
+# Clone from a URL
+git clone https://github.com/username/repository.git
+
+# Clone to a specific folder
+git clone https://github.com/username/repository.git my-folder</pre>
+
+        <h2>Key Takeaways</h2>
+        <div class="success-box">
+            <ol>
+                <li><strong>Git is distributed:</strong> Everyone has a full copy of the repository</li>
+                <li><strong>Three areas:</strong> Working Directory → Staging → Repository</li>
+                <li><strong>Commits are snapshots:</strong> Complete pictures, not just changes</li>
+                <li><strong>Branches are pointers:</strong> Lightweight, create them freely</li>
+                <li><strong>HEAD shows where you are:</strong> Your current position in history</li>
+            </ol>
+        </div>
+
+        <div class="nav-links">
+            <a href="00-git-index.html">← Table of Contents</a>
+            <a href="02-git-daily-workflow.html">Part 2: Daily Workflow →</a>
+        </div>
+    </div>
+</body>
+</html>
